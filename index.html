@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aunikah - Smart Employment Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 900px;
+            height: calc(100vh - 40px);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .header-text h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-detection {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .badge-client {
+            background: rgba(66, 153, 225, 0.3);
+        }
+
+        .badge-employer {
+            background: rgba(159, 122, 234, 0.3);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .demo-notice {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .demo-notice strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .quick-setup {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            color: #333;
+            display: none;
+        }
+
+        .quick-setup.active {
+            display: block;
+        }
+
+        .quick-setup h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .company-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .company-btn {
+            padding: 6px 12px;
+            background: #f0f4ff;
+            border: 1px solid #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #667eea;
+            transition: all 0.2s;
+        }
+
+        .company-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .message.user .message-avatar {
+            background: #6c757d;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .confidence-badge {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn, .csv-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            font-size: 14px;
+        }
+
+        .csv-btn {
+            background: #f0f4ff;
+            color: #667eea;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .send-btn:hover, .csv-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .mode-selector {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-top">
+                <div class="header-info">
+                    <div class="bot-avatar">A</div>
+                    <div class="header-text">
+                        <h1>Aunikah</h1>
+                        <p id="modeDescription">
+                            Smart Employment Assistant
+                            <span id="detectionBadge"></span>
+                            <span id="clientBadge"></span>
+                            <span id="employerBadge"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="switchMode('employee')">👤 Employee</button>
+                    <button class="mode-btn" onclick="switchMode('manager')">👔 Manager</button>
+                </div>
+            </div>
+
+            <div class="demo-notice">
+                <strong>🧠 Smart Detection Active</strong>
+                I'll detect your employment type and companies from your questions!
+                <button onclick="toggleQuickSetup()" style="background: rgba(255,255,255,0.3); border: none; color: white; padding: 4px 12px; border-radius: 12px; cursor: pointer; font-size: 11px; margin-left: 10px;">Quick Setup</button>
+            </div>
+
+            <div class="quick-setup" id="quickSetup">
+                <h3>Quick Demo Setup (Optional)</h3>
+                <div style="margin-bottom: 10px;">
+                    <strong style="font-size: 12px; color: #666;">Where do you work? (Client)</strong>
+                    <div class="company-buttons">
+                        <button class="company-btn" onclick="setClient('Google')">Google</button>
+                        <button class="company-btn" onclick="setClient('Microsoft')">Microsoft</button>
+                        <button class="company-btn" onclick="setClient('Amazon')">Amazon</button>
+                        <button class="company-btn" onclick="setClient('Meta')">Meta</button>
+                    </div>
+                </div>
+                <div>
+                    <strong style="font-size: 12px; color: #666;">Who employs you? (EOR/Staffing)</strong>
+                    <div class="company-buttons">
+                        <button class="company-btn" onclick="setEmployer('Randstad')">Randstad</button>
+                        <button class="company-btn" onclick="setEmployer('Adecco')">Adecco</button>
+                        <button class="company-btn" onclick="setEmployer('Manpower')">Manpower</button>
+                        <button class="company-btn" onclick="setEmployer('Robert Half')">Robert Half</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="file" id="csvInput" accept=".csv" style="display: none;" onchange="handleCSVUpload(event)">
+                <button class="csv-btn" onclick="document.getElementById('csvInput').click()">📁 Upload CSV</button>
+                <input 
+                    type="text" 
+                    id="chatInput" 
+                    class="chat-input" 
+                    placeholder="Ask me anything..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="send-btn" onclick="handleSend()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentMode = 'employee';
+        let detectedType = null;
+        let clientCompany = null;
+        let employerCompany = null;
+        let faqData = null;
+
+        // Common typos
+        const typos = {
+            'benifits': 'benefits', 'benfits': 'benefits', 'bennefits': 'benefits',
+            'vaccation': 'vacation', 'vacaton': 'vacation', 'insurence': 'insurance',
+            'holliday': 'holiday', 'payed': 'paid', 'timeoff': 'time off'
+        };
+
+        // Detection patterns
+        const patterns = {
+            indicators_1099: ['invoice', 'invoicing', 'bill', 'quarterly taxes', 'my rate', 'freelance'],
+            indicators_w2: ['paycheck', 'paystub', 'withholding', 'pto', 'benefits enrollment', 'clock in'],
+            indicators_contingent: ['staffing', 'eor', 'placed at', 'assignment', 'my recruiter'],
+            confusion: ['my manager at', 'my boss at', 'i work for'],
+            clients: ['google', 'microsoft', 'amazon', 'meta', 'apple', 'netflix'],
+            eors: ['randstad', 'adecco', 'manpower', 'aerotek', 'robert half', 'kelly']
+        };
+
+        // Demo FAQ data (embedded - will be replaced by CSV)
+        const demoData = {
+            employee: [
+                {
+                    keywords: ['eor', 'employer of record', 'staffing', 'agency', 'recruiter'],
+                    types: ['W2'],
+                    answer: "📋 **Understanding Your EOR/Staffing Relationship:**\n\nIf you work through a staffing company or EOR, here's the REAL breakdown:\n\n**The Three Players:**\n• **[EOR]** = Your LEGAL employer (paystub and W-2)\n• **[Client Company]** = Where you physically work\n• **Your AuniConnect contact** = Point of contact, NOT your manager\n\n**Common Confusions:**\n❌ 'I work FOR [Client Company]' → You work AT them\n❌ 'My manager at [EOR]' → [EOR] isn't managing, they employ you\n✅ 'I'm employed BY [EOR], working at [Client Company]'\n\n**Who Handles What:**\n• Pay, benefits, PTO, taxes → [EOR]\n• Daily work, tasks → On-site supervisor at [Client Company]\n• Assignment issues → Your AuniConnect contact"
+                },
+                {
+                    keywords: ['who is my employer', 'who pays me', 'my company'],
+                    types: ['All'],
+                    answer: "Let's clear up WHO your employer is:\n\n**Check Your Paystub:**\nThe company name on your paystub is your legal employer.\n\n**Three Scenarios:**\n1️⃣ Direct Hire: Work for [Client Company], they send W-2\n2️⃣ W2 Contingent: Paystub says [EOR], work at [Client Company]\n3️⃣ 1099: Self-employed, invoice [Client Company]\n\n**To Confirm:** Check your January tax form (W-2 or 1099-NEC)"
+                },
+                {
+                    keywords: ['benefits', 'benifits', 'insurance', 'health', 'medical', 'dental'],
+                    types: ['W2', 'Direct Hire'],
+                    answer: "W2 Benefits:\n\n**Where to Get Benefits:**\n• Direct hire? → [Client Company]'s HR\n• Contingent through [EOR]? → [EOR]'s benefits team (NOT [Client Company]!)\n\n**Typical Benefits:**\n• Medical, dental, vision insurance\n• 401(k) with company match\n• PTO and sick days\n• Life and disability insurance\n\n**IMPORTANT:** If you work at [Client Company] but employed by [EOR], contact [EOR] for benefits!"
+                },
+                {
+                    keywords: ['benefits', 'insurance'],
+                    types: ['1099'],
+                    answer: "1099 Contractors - No Benefits:\n\n**Reality Check:**\n❌ No company health insurance\n❌ No 401(k) matching\n❌ No paid time off\n\n**Your Options:**\n• Healthcare.gov for insurance\n• Solo 401(k) or SEP IRA\n• Build 20-30% extra into your rate\n\n**Are you sure you're 1099?** If you get paychecks (not invoices), you might be W2!"
+                },
+                {
+                    keywords: ['pto', 'vacation', 'time off', 'paid time off'],
+                    types: ['W2', 'Direct Hire'],
+                    answer: "PTO for W2 Employees:\n\n**Where to Find Policy:**\n• Direct hire → [Client Company]'s handbook\n• Contingent → [EOR]'s policy (NOT [Client Company]!)\n\n**Typical PTO:**\n• 10-20 vacation days/year\n• 5-10 sick days/year\n• Request 2+ weeks advance\n\n**If contingent:** Your on-site supervisor may approve scheduling, but [EOR] tracks your PTO."
+                },
+                {
+                    keywords: ['pto', 'time off'],
+                    types: ['1099'],
+                    answer: "Time Off for 1099:\n\n**Reality:** ZERO paid time off. Every day off = no income.\n\n**How to Handle:**\n1. Notify [Client Company] 2+ weeks ahead\n2. Ensure deliverables are covered\n3. Don't invoice for days off\n4. Build buffer into your rate\n\n**Confusion check:** If you think you have PTO, you might be W2!"
+                },
+                {
+                    keywords: ['pay', 'paycheck', 'paid', 'salary', 'wage'],
+                    types: ['W2', 'Direct Hire'],
+                    answer: "W2 Payroll:\n\n**Who Pays You:**\nCheck your paystub!\n• Direct hire → [Client Company]\n• Contingent → [EOR] (NOT [Client Company]!)\n\n**Schedule:** Usually bi-weekly, direct deposit\n**Taxes:** Automatically withheld\n**Questions:** Contact HR at the company on your paystub"
+                },
+                {
+                    keywords: ['invoice', 'payment', 'bill'],
+                    types: ['1099'],
+                    answer: "1099 Payment:\n\n**How It Works:**\n1. Complete work\n2. Submit invoice to [Client Company]\n3. Get paid in 30 days (typically)\n4. YOU handle ALL taxes\n\n**Invoice Must Include:**\n• Your business name/SSN\n• Hours or deliverables\n• Rate and total\n• Payment terms\n\n**Set aside 25-30% for taxes!**"
+                }
+            ],
+            manager: [
+                {
+                    keywords: ['contingent', 'contractor', 'manage', 'team'],
+                    types: ['All'],
+                    answer: "📋 Managing Contingent Workers:\n\n**You're NOT Their Manager:**\n• You're their client contact/site supervisor\n• [EOR] is their legal employer\n• AuniConnect coordinates\n\n**What You CAN Do:**\n• Assign daily tasks\n• Give work direction\n• Provide feedback on deliverables\n\n**What to AVOID:**\n• Don't do performance reviews\n• Don't discuss employment terms\n• Don't promise continued employment\n\n**When They Ask About:**\n• Work → Help them\n• Pay/benefits → Direct to [EOR]\n• They call you 'manager' → Gently correct"
+                },
+                {
+                    keywords: ['pto', 'benefits', 'team questions', 'answer questions'],
+                    types: ['All'],
+                    answer: "Answering Team Questions (For Managers):\n\n**Your team asks YOU, but answers come from:**\n• Direct hire questions → Your company's HR\n• Contingent worker questions → Their EOR/staffing company\n\n**Common Questions & Where to Direct:**\n• PTO/Benefits → Employee's EOR (check their paystub company)\n• Paycheck issues → Employee's EOR payroll\n• Work schedule → You can coordinate\n• Performance → You give feedback, EOR handles formal reviews\n\n**Pro Tip:** Keep contact info for your team's EORs handy. You'll need it!\n\n**For 1099 Contractors:**\n• They have NO PTO or benefits\n• Direct work questions only\n• They're vendors, not employees"
+                }
+            ]
+        };
+
+        // Initialize
+        function init() {
+            faqData = demoData;
+            switchMode('employee');
+        }
+
+        // UI Functions
+        function toggleQuickSetup() {
+            const setup = document.getElementById('quickSetup');
+            setup.classList.toggle('active');
+        }
+
+        function setClient(company) {
+            clientCompany = company;
+            updateBadges();
+            addMessage(`I work at ${company}`, 'user');
+            setTimeout(() => {
+                addMessage(`Got it! You work at ${company}. I'll personalize my answers for you!`, 'bot');
+            }, 500);
+        }
+
+        function setEmployer(company) {
+            employerCompany = company;
+            updateBadges();
+            addMessage(`I'm employed by ${company}`, 'user');
+            setTimeout(() => {
+                addMessage(`Perfect! ${company} is your employer. I'll direct you to them for HR questions.`, 'bot');
+            }, 500);
+        }
+
+        function updateBadges() {
+            const detBadge = document.getElementById('detectionBadge');
+            const clientBadge = document.getElementById('clientBadge');
+            const emplBadge = document.getElementById('employerBadge');
+            
+            detBadge.innerHTML = detectedType ? `<span class="badge badge-detection">${detectedType === 'W2_Contingent' ? 'W2 Contingent' : detectedType}</span>` : '';
+            clientBadge.innerHTML = clientCompany ? `<span class="badge badge-client">@ ${clientCompany}</span>` : '';
+            emplBadge.innerHTML = employerCompany ? `<span class="badge badge-employer">Employed by: ${employerCompany}</span>` : '';
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+            
+            const desc = document.getElementById('modeDescription');
+            if (mode === 'employee') {
+                desc.childNodes[0].textContent = 'Smart Employment Assistant';
+                addMessage("Hi! 👤 I'm here to answer your employment questions. I'll figure out your type from your questions - just ask!", 'bot');
+            } else {
+                desc.childNodes[0].textContent = 'Manager Support - Team Q&A Helper';
+                addMessage("Hi! 👔 I'm here to help you answer your team's PTO and benefits questions, especially for contingent workers!", 'bot');
+            }
+            updateBadges();
+        }
+
+        // Detection
+        function detectCompanies(msg) {
+            const lower = msg.toLowerCase();
+            let client = null, employer = null;
+            
+            patterns.clients.forEach(c => {
+                if (lower.includes(c)) client = c.charAt(0).toUpperCase() + c.slice(1);
+            });
+            patterns.eors.forEach(e => {
+                if (lower.includes(e)) {
+                    employer = e.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                }
+            });
+            
+            return { client, employer };
+        }
+
+        function detectType(msg) {
+            const lower = msg.toLowerCase();
+            let score = { '1099': 0, 'W2': 0, 'Contingent': 0 };
+            
+            patterns.indicators_1099.forEach(i => { if (lower.includes(i)) score['1099'] += 2; });
+            patterns.indicators_w2.forEach(i => { if (lower.includes(i)) score['W2'] += 2; });
+            patterns.indicators_contingent.forEach(i => { if (lower.includes(i)) { score['W2']++; score['Contingent'] += 2; } });
+            
+            const confusion = patterns.confusion.some(s => lower.includes(s));
+            const max = Math.max(score['1099'], score['W2']);
+            
+            let type = null;
+            if (max >= 2) {
+                type = score['1099'] > score['W2'] ? '1099' : 'W2';
+                if (score['Contingent'] >= 2 && type === 'W2') type = 'W2_Contingent';
+            }
+            
+            return { type, confusion, scores: score };
+        }
+
+        // Matching
+        function normalizeText(text) {
+            let normalized = text.toLowerCase();
+            Object.keys(typos).forEach(typo => {
+                normalized = normalized.replace(new RegExp('\\b' + typo + '\\b', 'gi'), typos[typo]);
+            });
+            return normalized;
+        }
+
+        function findMatch(msg, context) {
+            const faqs = faqData[currentMode];
+            const normalized = normalizeText(msg);
+            let best = { answer: null, confidence: 0 };
+            
+            faqs.forEach(faq => {
+                if (context && context !== 'All') {
+                    const ctx = context === 'W2_Contingent' ? 'W2' : context;
+                    if (!faq.types.includes('All') && !faq.types.includes(ctx)) return;
+                }
+                
+                faq.keywords.forEach(kw => {
+                    if (normalized.includes(kw)) {
+                        if (0.95 > best.confidence) {
+                            best = { answer: faq.answer, confidence: 0.95 };
+                        }
+                    }
+                });
+            });
+            
+            return best;
+        }
+
+        // Response generation
+        function getResponse(msg) {
+            const companies = detectCompanies(msg);
+            if (companies.client && !clientCompany) clientCompany = companies.client;
+            if (companies.employer && !employerCompany) employerCompany = companies.employer;
+            updateBadges();
+            
+            const detection = detectType(msg);
+            if (detection.type && detection.scores[detection.type] >= 3) {
+                detectedType = detection.type;
+                updateBadges();
+            }
+            
+            const lower = msg.toLowerCase();
+            if (lower.match(/\b(hi|hello|hey)\b/)) {
+                return currentMode === 'employee' 
+                    ? "Hello! 😊 I'll figure out your employment type from your questions. Just ask away!"
+                    : "Hello! 👔 I'm here to help you answer your team's employment questions!";
+            }
+            
+            if (lower.match(/\b(thank|thanks)\b/)) {
+                return "You're welcome! 🌟";
+            }
+            
+            const match = findMatch(msg, detection.type || detectedType);
+            if (match.answer && match.confidence > 0.6) {
+                let response = match.answer;
+                
+                // Replace placeholders
+                if (clientCompany || companies.client) {
+                    const c = clientCompany || companies.client;
+                    response = response.replace(/\[Client Company\]/g, c);
+                    response = response.replace(/the client company/g, c);
+                }
+                if (employerCompany || companies.employer) {
+                    const e = employerCompany || companies.employer;
+                    response = response.replace(/\[EOR\]/g, e);
+                    response = response.replace(/your EOR/g, e);
+                }
+                
+                if (detection.confusion && (clientCompany || companies.client)) {
+                    const c = clientCompany || companies.client || '[your client]';
+                    const e = employerCompany || companies.employer || '[your employer]';
+                    response += `\n\n💡 **Quick clarification:** I noticed confusion about employment.\n\n• You work ON-SITE at **${c}**\n• But employed BY **${e}** (check paystub!)\n• ${e} handles pay/benefits, not ${c}`;
+                }
+                
+                if (detection.type && detection.scores[detection.type] >= 3) {
+                    const label = detection.type === 'W2_Contingent' ? 'W2 contingent worker' : detection.type;
+                    response = `🔍 Based on your question, you're a **${label}**.\n\n` + response;
+                }
+                
+                return response;
+            }
+            
+            return "I'm not finding a match. Try asking about:\n\n• Benefits and insurance\n• PTO and time off\n• Payment/payroll\n• Who your employer is";
+        }
+
+        // Message handling
+        function addMessage(text, sender) {
+            const messages = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.innerHTML = `
+                <div class="message-avatar">${sender === 'bot' ? 'A' : 'You'}</div>
+                <div class="message-content">${text}</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') handleSend();
+        }
+
+        function handleSend() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            
+            addMessage(msg, 'user');
+            input.value = '';
+            
+            const messages = document.getElementById('chatMessages');
+            const typing = document.createElement('div');
+            typing.className = 'message bot';
+            typing.innerHTML = `
+                <div class="message-avatar">A</div>
+                <div class="typing-indicator active">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messages.appendChild(typing);
+            
+            setTimeout(() => {
+                typing.remove();
+                const response = getResponse(msg);
+                addMessage(response, 'bot');
+            }, 1000);
+        }
+
+        // CSV handling
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    parseCSV(e.target.result);
+                    addMessage("✅ CSV loaded! Your custom Q&As are active.", 'bot');
+                } catch (err) {
+                    addMessage("❌ Error loading CSV. Check format.", 'bot');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const parsed = { employee: [], manager: [] };
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const parts = line.split('","');
+                if (parts.length < 4) continue;
+                
+                const keywords = parts[1].replace(/"/g, '').split(';').map(k => k.trim());
+                const types = parts[2].replace(/"/g, '').split(';').map(t => t.trim());
+                const answer = parts[3].replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+                const mode = (parts[4] || 'employee').replace(/"/g, '').trim();
+                
+                parsed[mode].push({ keywords, types, answer });
+            }
+            
+            faqData = parsed;
+        }
+
+        // Start
+        window.onload = init;
+    </script>
+</body>
+</html>
