@@ -442,6 +442,27 @@
     "escalate": false,
     "tags": ["manager","confusion"]
   }
+  {
+  "id": "emp_benefits_general",
+  "patterns": ["benefits","benefit","medical","dental","vision","insurance","benefits enrollment","enroll benefits","open enrollment"],
+  "intent": "benefits",
+  "audience": "employee",
+  "priority": 80,
+  "answer": "Benefits for **[WORKER_TYPE]** are administered by **[EOR]** (the employer on your paystub), not **[CLIENT]**. Sign in to **[EOR]**’s benefits portal or contact **[EOR]** HR for plan options and deadlines.",
+  "escalate": false,
+  "tags": ["employee","benefits"]
+},
+{
+  "id": "mgr_motivation_general",
+  "patterns": ["motivation","motivate","engagement","energize"],
+  "intent": "engagement",
+  "audience": "manager",
+  "priority": 78,
+  "answer": "Quick motivation playbook: shorten goals to 1-week wins, clarify a tight ‘definition of done’, swap one rote task for a visible impact task, and schedule a 15-min unblocker 1:1. Recognize progress publicly in the team channel.",
+  "escalate": false,
+  "tags": ["manager","engagement","motivation"]
+}
+
 ]
   </script>
 
@@ -581,6 +602,14 @@
           : "Hello! 👔 I’m here to help you answer your team’s PTO/benefits questions.";
       }
       if (/\b(thank|thanks)\b/.test(lower)) return "You're welcome! 🌟";
+	  
+	  // Benefits safety net
+if (/\bbenefit(s)?\b/.test(lower)) {
+  const eor = sessionProfile.employer || 'your employer (on your paystub)';
+  const wt  = sessionProfile.typeHint || 'W-2';
+  return `Benefits for **${wt}** are handled by **${eor}**, not [CLIENT]. Log into **${eor}**’s benefits portal or contact their HR for plan options and deadlines.`;
+}
+
 
       // Confusion override
       const confusion = detectConfusion(lower);
