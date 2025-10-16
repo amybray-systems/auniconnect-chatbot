@@ -858,32 +858,39 @@
             if (match.answer && match.confidence > 0.6) {
                 let response = match.answer;
 
-                // Smart placeholder replacement based on employment type
-                const client = clientCompany || 'your client company';
-                const eor = employerCompany || 'your EOR/staffing company';
-
-                if (detectedType === '1099') {
-                    // 1099: No employer, just client
-                    response = response.replace(/\[EOR\]/g, 'N/A (you\'re self-employed)');
-                    response = response.replace(/\[Client Company\]/g, client);
-                } else if (detectedType === 'W2_Contingent') {
-                    // W2 Contingent: Split between EOR and Client
-                    response = response.replace(/\[Client Company\]/g, client);
-                    response = response.replace(/\[EOR\]/g, eor);
-                    response = response.replace(/\[BENEFITS_PROVIDER\]/g, `${eor} (your employer)`);
-                    response = response.replace(/\[PTO_PROVIDER\]/g, eor);
-                    response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
-                    response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s time system (may sync with ${client}'s)`);
-                    response = response.replace(/\[ACCESS_HELP\]/g, `For ${eor} portal/paystubs: Contact ${eor} support. For ${client} work systems: Contact your manager or ${client} IT.`);
+                // Smart placeholder replacement based on mode
+                if (currentMode === 'manager') {
+                    // Manager mode: Generic replacements (talking about team members)
+                    response = response.replace(/\[EOR\]/g, 'their EOR/staffing company');
+                    response = response.replace(/\[Client Company\]/g, 'your company');
                 } else {
-                    // Fallback: Assume W2 Contingent
-                    response = response.replace(/\[Client Company\]/g, client);
-                    response = response.replace(/\[EOR\]/g, eor);
-                    response = response.replace(/\[BENEFITS_PROVIDER\]/g, eor);
-                    response = response.replace(/\[PTO_PROVIDER\]/g, eor);
-                    response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
-                    response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s system`);
-                    response = response.replace(/\[ACCESS_HELP\]/g, `Contact ${eor} support.`);
+                    // Employee mode: Personalized replacements based on employment type
+                    const client = clientCompany || 'your client company';
+                    const eor = employerCompany || 'your EOR/staffing company';
+
+                    if (detectedType === '1099') {
+                        // 1099: No employer, just client
+                        response = response.replace(/\[EOR\]/g, 'N/A (you\'re self-employed)');
+                        response = response.replace(/\[Client Company\]/g, client);
+                    } else if (detectedType === 'W2_Contingent') {
+                        // W2 Contingent: Split between EOR and Client
+                        response = response.replace(/\[Client Company\]/g, client);
+                        response = response.replace(/\[EOR\]/g, eor);
+                        response = response.replace(/\[BENEFITS_PROVIDER\]/g, `${eor} (your employer)`);
+                        response = response.replace(/\[PTO_PROVIDER\]/g, eor);
+                        response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
+                        response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s time system (may sync with ${client}'s)`);
+                        response = response.replace(/\[ACCESS_HELP\]/g, `For ${eor} portal/paystubs: Contact ${eor} support. For ${client} work systems: Contact your manager or ${client} IT.`);
+                    } else {
+                        // Fallback: Assume W2 Contingent
+                        response = response.replace(/\[Client Company\]/g, client);
+                        response = response.replace(/\[EOR\]/g, eor);
+                        response = response.replace(/\[BENEFITS_PROVIDER\]/g, eor);
+                        response = response.replace(/\[PTO_PROVIDER\]/g, eor);
+                        response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
+                        response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s system`);
+                        response = response.replace(/\[ACCESS_HELP\]/g, `Contact ${eor} support.`);
+                    }
                 }
 
                 // Add detection banner (employee mode only)
