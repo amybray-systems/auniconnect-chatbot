@@ -496,7 +496,7 @@
     // Detection dictionaries
     // -----------------------
     const DETECT = {
-      w2: ["paycheck","paystub","withholding","pto","benefits enrollment","clock in"],
+      w2: ["paycheck","paystub","withholding","pto","benefits enrollment","benefits","benifits","report time", "timesheet","clock in"],
       w2_contingent: ["staffing company","eor","placed at","assignment","my recruiter","staffing"],
       c1099: ["invoice","bill","freelance","my rate","quarterly taxes","deduct expenses","invoicing"],
       confusion: ["my manager at ","i work for ","my boss at ","i thought you were my manager"]
@@ -603,11 +603,17 @@
       }
       if (/\b(thank|thanks)\b/.test(lower)) return "You're welcome! 🌟";
 	  
-	  // Benefits safety net
+	  // Benefits safety net (runs even if no FAQ matched)
 if (/\bbenefit(s)?\b/.test(lower)) {
-  const eor = sessionProfile.employer || 'your employer (on your paystub)';
-  const wt  = sessionProfile.typeHint || 'W-2';
-  return `Benefits for **${wt}** are handled by **${eor}**, not [CLIENT]. Log into **${eor}**’s benefits portal or contact their HR for plan options and deadlines.`;
+  // If type is unknown, assume W-2 for benefits context
+  if (!sessionProfile.typeHint || sessionProfile.typeHint === 'Unknown') {
+    sessionProfile.typeHint = 'W-2';
+    saveProfile();
+    updateBadges();
+  }
+  // Use placeholders and personalize so [CLIENT]/[EOR] get sensible fallbacks
+  const tmpl = "Benefits for **[WORKER_TYPE]** are handled by **[EOR]**, not [CLIENT]. Log into **[EOR]**’s benefits portal or contact their HR for plan options and deadlines.";
+  return personalize(tmpl);
 }
 
 
