@@ -1,777 +1,1026 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aunikah - Smart Employment Assistant</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;flex-direction:column;padding:20px}
-    .chat-container{width:100%;max-width:900px;height:calc(100vh - 40px);background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;margin:0 auto}
-    .chat-header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:20px}
-    .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
-    .header-info{display:flex;align-items:center;gap:15px}
-    .bot-avatar{width:50px;height:50px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#667eea}
-    .header-text h1{font-size:22px;margin-bottom:5px}
-    .header-text p{font-size:14px;opacity:.9}
-    .badge{display:inline-block;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;margin-left:8px}
-    .badge-detection{background:rgba(255,255,255,.3)}
-    .badge-client{background:rgba(66,153,225,.3)}
-    .badge-employer{background:rgba(159,122,234,.3)}
-    .mode-selector{display:flex;gap:10px}
-    .mode-btn{padding:8px 16px;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.3);border-radius:20px;color:#fff;cursor:pointer;font-size:13px;transition:all .3s}
-    .mode-btn:hover{background:rgba(255,255,255,.3)}
-    .mode-btn.active{background:#fff;color:#667eea;border-color:#fff}
-    .demo-notice{background:rgba(255,255,255,.15);padding:12px;border-radius:10px;font-size:13px}
-    .demo-notice strong{display:block;margin-bottom:5px}
-    .quick-setup{background:#fff;border-radius:10px;padding:15px;margin-top:10px;color:#333;display:none}
-    .quick-setup.active{display:block}
-    .quick-setup h3{font-size:14px;margin-bottom:10px;color:#667eea}
-    .company-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
-    .company-btn{padding:6px 12px;background:#f0f4ff;border:1px solid #667eea;border-radius:6px;cursor:pointer;font-size:12px;color:#667eea;transition:all .2s}
-    .company-btn:hover{background:#667eea;color:#fff}
-    .chat-messages{flex:1;overflow-y:auto;padding:20px;background:#f8f9fa}
-    .message{display:flex;gap:10px;margin-bottom:15px;animation:slideIn .3s ease}
-    @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    .message.user{flex-direction:row-reverse}
-    .message-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;font-size:14px}
-    .message.bot .message-avatar{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
-    .message.user .message-avatar{background:#6c757d}
-    .message-content{max-width:70%;padding:12px 16px;border-radius:12px;line-height:1.6;white-space:pre-line}
-    .message.bot .message-content{background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.1);color:#333}
-    .message.user .message-content{background:#667eea;color:#fff}
-    .typing-indicator{display:none;padding:15px;background:#fff;border-radius:12px;width:fit-content}
-    .typing-indicator.active{display:flex;gap:4px}
-    .typing-dot{width:8px;height:8px;border-radius:50%;background:#667eea;animation:typing 1.4s infinite}
-    .typing-dot:nth-child(2){animation-delay:.2s}
-    .typing-dot:nth-child(3){animation-delay:.4s}
-    @keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-10px)}}
-    .chat-input-container{padding:20px;background:#fff;border-top:1px solid #e9ecef}
-    .chat-input-wrapper{display:flex;gap:10px}
-    .chat-input{flex:1;padding:12px 20px;border:2px solid #e9ecef;border-radius:25px;font-size:15px;outline:none;transition:border-color .2s}
-    .chat-input:focus{border-color:#667eea}
-    .send-btn,.csv-btn{padding:12px 24px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border:none;border-radius:25px;cursor:pointer;font-weight:700;transition:transform .2s;font-size:14px}
-    .csv-btn{background:#f0f4ff;color:#667eea;padding:8px 16px;font-size:12px}
-    .send-btn:hover,.csv-btn:hover{transform:scale(1.05)}
-    .send-btn:disabled{opacity:.5;cursor:not-allowed}
-    @media (max-width:768px){.chat-container{height:100vh;border-radius:0}.message-content{max-width:85%}.mode-selector{flex-direction:column;gap:5px}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aunikah - Smart Employment Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 900px;
+            height: calc(100vh - 40px);
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .header-text h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-detection {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .badge-client {
+            background: rgba(66, 153, 225, 0.3);
+        }
+
+        .badge-employer {
+            background: rgba(159, 122, 234, 0.3);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .demo-notice {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+
+        .demo-notice strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .quick-setup {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            color: #333;
+            display: none;
+        }
+
+        .quick-setup.active {
+            display: block;
+        }
+
+        .quick-setup h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .company-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .company-btn {
+            padding: 6px 12px;
+            background: #f0f4ff;
+            border: 1px solid #667eea;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #667eea;
+            transition: all 0.2s;
+        }
+
+        .company-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .message.user .message-avatar {
+            background: #6c757d;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.6;
+        }
+
+        .message.bot .message-content {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .message.bot .message-content strong {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn, .csv-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+            font-size: 14px;
+        }
+
+        .csv-btn {
+            background: #f0f4ff;
+            color: #667eea;
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .send-btn:hover, .csv-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .mode-selector {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="chat-container">
-    <div class="chat-header">
-      <div class="header-top">
-        <div class="header-info">
-          <div class="bot-avatar">A</div>
-          <div class="header-text">
-            <h1>Aunikah</h1>
-            <p id="modeDescription">
-              Smart Employment Assistant
-              <span id="detectionBadge"></span>
-              <span id="clientBadge"></span>
-              <span id="employerBadge"></span>
-            </p>
-          </div>
-        </div>
-        <div class="mode-selector">
-          <button id="btnEmployee" class="mode-btn active" onclick="switchMode('employee', this)">👤 Employee</button>
-          <button id="btnManager" class="mode-btn" onclick="switchMode('manager', this)">👔 Manager</button>
-        </div>
-      </div>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-top">
+                <div class="header-info">
+                    <div class="bot-avatar">A</div>
+                    <div class="header-text">
+                        <h1>Aunikah</h1>
+                        <p id="modeDescription">
+                            Smart Employment Assistant
+                            <span id="detectionBadge"></span>
+                            <span id="clientBadge"></span>
+                            <span id="employerBadge"></span>
+                        </p>
+                    </div>
+                </div>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="switchMode('employee', event)">👤 Employee</button>
+                    <button class="mode-btn" onclick="switchMode('manager', event)">👔 Manager</button>
+                </div>
+            </div>
 
-      <div class="demo-notice">
-        <strong>🧠 Smart Detection Active</strong>
-        I'll detect your employment type and companies from your questions!
-        <button onclick="toggleQuickSetup()" style="background: rgba(255,255,255,0.3); border: none; color: white; padding: 4px 12px; border-radius: 12px; cursor: pointer; font-size: 11px; margin-left: 10px;">Quick Setup</button>
-      </div>
+            <div class="demo-notice">
+                <strong>🧠 Smart Detection Active</strong>
+                I'll detect your employment type from your questions, or use Quick Setup for instant demo!
+                <button onclick="toggleQuickSetup()" style="background:rgba(255,255,255,0.3);border:none;color:white;padding:4px 12px;border-radius:12px;cursor:pointer;font-size:11px;margin-left:10px">Quick Setup</button>
+            </div>
 
-      <div class="quick-setup" id="quickSetup">
-        <h3>Quick Demo Setup (Optional)</h3>
-        <div style="margin-bottom:10px;">
-          <strong style="font-size:12px;color:#666;">Where do you work? (Client)</strong>
-          <div class="company-buttons">
-            <button class="company-btn" onclick="setClient('Google')">Google</button>
-            <button class="company-btn" onclick="setClient('Microsoft')">Microsoft</button>
-            <button class="company-btn" onclick="setClient('Amazon')">Amazon</button>
-            <button class="company-btn" onclick="setClient('Meta')">Meta</button>
-          </div>
+            <div class="quick-setup" id="quickSetup">
+                <h3>Quick Demo Setup</h3>
+                <p style="font-size:11px;color:#666;margin-bottom:15px;font-style:italic">
+                    ⚙️ Demo only: In production, the system auto-detects employment type from assignment data
+                </p>
+                
+                <div style="margin-bottom:15px">
+                    <strong style="font-size:12px;color:#667eea">Employment Type</strong>
+                    <div class="company-buttons" style="margin-top:5px">
+                        <button class="company-btn" onclick="setEmploymentType('W2_Contingent')">W2 Contingent</button>
+                        <button class="company-btn" onclick="setEmploymentType('1099')">1099 Contractor</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:10px">
+                    <strong style="font-size:12px;color:#666">Where do you work? (Client)</strong>
+                    <div class="company-buttons">
+                        <button class="company-btn" onclick="setClient('Google')">Google</button>
+                        <button class="company-btn" onclick="setClient('Microsoft')">Microsoft</button>
+                        <button class="company-btn" onclick="setClient('Amazon')">Amazon</button>
+                        <button class="company-btn" onclick="setClient('Meta')">Meta</button>
+                    </div>
+                </div>
+                <div>
+                    <strong style="font-size:12px;color:#666">Who employs you? (EOR/Staffing)</strong>
+                    <p style="font-size:10px;color:#999;margin:2px 0 5px 0">⚠️ Only for W2 contingent workers (disabled for 1099)</p>
+                    <div class="company-buttons">
+                        <button class="company-btn" onclick="setEmployer('Randstad')">Randstad</button>
+                        <button class="company-btn" onclick="setEmployer('Adecco')">Adecco</button>
+                        <button class="company-btn" onclick="setEmployer('Manpower')">Manpower</button>
+                        <button class="company-btn" onclick="setEmployer('Robert Half')">Robert Half</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div>
-          <strong style="font-size:12px;color:#666;">Who employs you? (EOR/Staffing)</strong>
-          <div class="company-buttons">
-            <button class="company-btn" onclick="setEmployer('Randstad')">Randstad</button>
-            <button class="company-btn" onclick="setEmployer('Adecco')">Adecco</button>
-            <button class="company-btn" onclick="setEmployer('Manpower')">Manpower</button>
-            <button class="company-btn" onclick="setEmployer('Robert Half')">Robert Half</button>
-          </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="handleCSVUpload(event)">
+                <button class="csv-btn" onclick="document.getElementById('csvInput').click()">📁 Upload CSV</button>
+                <input type="text" id="chatInput" class="chat-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
+                <button class="send-btn" onclick="handleSend()">Send</button>
+            </div>
         </div>
-      </div>
     </div>
 
-    <div class="chat-messages" id="chatMessages"></div>
+    <script>
+        // State
+        let currentMode = 'employee';
+        let clientCompany = null;
+        let employerCompany = null;
+        let detectedType = null;
+        let faqData = null;
 
-    <div class="chat-input-container">
-      <div class="chat-input-wrapper">
-        <!-- Keep CSV button visible for now (optional). It won't break JSON usage. -->
-        <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="handleCSVUpload(event)"/>
-        <button class="csv-btn" onclick="document.getElementById('csvInput').click()">📁 Upload CSV</button>
-        <input id="chatInput" class="chat-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)"/>
-        <button class="send-btn" onclick="handleSend()">Send</button>
-      </div>
-    </div>
-  </div>
+        // Typos mapping
+        const typos = {
+            'benifits': 'benefits', 'benfits': 'benefits', 'bennefits': 'benefits',
+            'vaccation': 'vacation', 'vacaton': 'vacation',
+            'insurence': 'insurance', 'insuranse': 'insurance',
+            'holliday': 'holiday', 'sallary': 'salary',
+            'payed': 'paid', 'pade': 'paid',
+            'timeoff': 'time off', 'sicke': 'sick'
+        };
 
-  <!-- Inline JSON FAQs (single-file demo). Add more objects as you wish. -->
-  <script type="application/json" id="faq-json">
-  [
-  {
-    "id": "w2_pto_basic",
-    "patterns": ["pto","vacation","time off","request pto"],
-    "intent": "pto",
-    "audience": "employee",
-    "priority": 70,
-    "answer": "To request PTO as a **[WORKER_TYPE]** at **[CLIENT]**, use **[EOR]**’s PTO system (the employer on your paystub). Submit dates in **[EOR]**’s portal and notify your **[CLIENT]** team per norms.",
-    "escalate": false,
-    "tags": ["w2","pto"]
-  },
-  {
-    "id": "eor_confusion_correction",
-    "patterns": ["my manager at","manager at staffing","ask the client","who is my employer","which company is my employer"],
-    "intent": "eor_education",
-    "audience": "employee",
-    "priority": 90,
-    "answer": "Quick clarification: You’re employed by **[EOR]** (see your paystub). **[CLIENT]** is your on-site client. Use **[EOR]** for pay/benefits/HR; use **[CLIENT]** for day-to-day work direction.",
-    "escalate": false,
-    "tags": ["education","confusion"]
-  },
+        // Detection patterns
+        const patterns = {
+            indicators_1099: ['invoice', 'invoicing', 'bill', 'quarterly taxes', 'my rate', 'freelance', 'deduct'],
+            indicators_w2: ['paycheck', 'paystub', 'withholding', 'pto', 'benefits enrollment', 'clock in'],
+            indicators_contingent: ['staffing', 'eor', 'placed at', 'assignment', 'my recruiter'],
+            confusion: ['my manager at', 'my boss at', 'i work for'],
+            clients: ['google', 'microsoft', 'amazon', 'meta', 'apple', 'netflix'],
+            eors: ['randstad', 'adecco', 'manpower', 'aerotek', 'robert half', 'kelly']
+        };
 
-  /* =========================
-     Manager – Routing & Ops
-     ========================= */
-  {
-    "id": "mgr_pto_routing",
-    "patterns": ["team pto","direct report pto","approve pto","pto question from my team"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 90,
-    "answer": "For W-2 talent employed by **[EOR]** at **[CLIENT]**: PTO is requested and tracked in **[EOR]**’s system. As a **[CLIENT]** manager, approve time away per team norms—don’t process PTO in **[CLIENT]** HR tools.",
-    "escalate": false,
-    "tags": ["manager","pto"]
-  },
-  {
-    "id": "mgr_benefits_routing",
-    "patterns": ["team benefits question","contractor benefits","insurance","medical benefits"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 90,
-    "answer": "Contractor benefits are handled by **[EOR]** (employer on the paystub), not **[CLIENT]**. Share **[EOR]**’s HR link or ask the worker to log in to the **[EOR]** portal. If they’re invoicing (1099), benefits typically are not provided by **[CLIENT]**/**[EOR]**.",
-    "escalate": false,
-    "tags": ["manager","benefits"]
-  },
-  {
-    "id": "mgr_payroll_routing",
-    "patterns": ["team payroll","paycheck problem","direct deposit","tax withholding"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 85,
-    "answer": "Payroll issues (late pay, tax withholding, bank changes) go to **[EOR]** payroll. Ask the worker to open a ticket with **[EOR]** and include their assignment at **[CLIENT]**.",
-    "escalate": false,
-    "tags": ["manager","payroll"]
-  },
-  {
-    "id": "mgr_timekeeping",
-    "patterns": ["clock in","timekeeping","timesheet","missed punch","time card"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 80,
-    "answer": "If the worker is W-2 via **[EOR]**, official time lives in **[EOR]**’s tool. If **[CLIENT]** requires local capture, ensure entries sync back to **[EOR]** for payroll. Missed punches should be corrected in **[EOR]** per policy.",
-    "escalate": false,
-    "tags": ["manager","timekeeping"]
-  },
-  {
-    "id": "mgr_holiday_pay",
-    "patterns": ["holiday pay","company holiday","contractor holiday"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Holiday pay eligibility depends on **[EOR]** policy and classification. Direct workers to **[EOR]** HR/handbook. Avoid promising holiday pay in **[CLIENT]** systems.",
-    "escalate": false,
-    "tags": ["manager","holiday"]
-  },
-  {
-    "id": "mgr_ot_policy",
-    "patterns": ["overtime","ot approval","time over 40","double time"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 80,
-    "answer": "Overtime rules vary by jurisdiction and **[EOR]** policy. Require pre-approval; confirm **[EOR]**’s OT thresholds (daily vs weekly) and code hours correctly so they flow to **[EOR]** payroll.",
-    "escalate": false,
-    "tags": ["manager","overtime"]
-  },
-  {
-    "id": "mgr_leave",
-    "patterns": ["leave of absence","medical leave","fmla","pfml","disability"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 85,
-    "answer": "Leaves for W-2 talent are administered by **[EOR]**. Route the worker to **[EOR]**’s leave team. Your role at **[CLIENT]** is coverage planning and schedule coordination.",
-    "escalate": false,
-    "tags": ["manager","leave"]
-  },
-  {
-    "id": "mgr_assignment_extend",
-    "patterns": ["extension","end date change","renew contract","extend assignment"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 80,
-    "answer": "Ask your **[CLIENT]** recruiting/engagement POC to request an extension with **[EOR]** or the staffing vendor. Workers shouldn’t change end dates directly; **[EOR]** will issue updated terms.",
-    "escalate": false,
-    "tags": ["manager","assignment"]
-  },
-  {
-    "id": "mgr_end_assignment",
-    "patterns": ["end assignment","offboarding","last day","terminate assignment"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 80,
-    "answer": "Coordinate end date with **[EOR]** and follow **[CLIENT]** offboarding steps (badge, laptop, access). **[EOR]** handles final pay and any benefits notices.",
-    "escalate": false,
-    "tags": ["manager","offboarding"]
-  },
-  {
-    "id": "mgr_access_requests",
-    "patterns": ["system access","badge access","permissions","app access"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Submit **[CLIENT]** access tickets per local process. For **[EOR]** systems (time/pay/benefits), the worker must contact **[EOR]** support. Keep roles least-privileged.",
-    "escalate": false,
-    "tags": ["manager","access"]
-  },
-  {
-    "id": "mgr_equipment",
-    "patterns": ["laptop","hardware","equipment issue","device replacement"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Follow **[CLIENT]** hardware process (ticket or walk-up). If equipment belongs to **[EOR]**/vendor, coordinate replacement through **[EOR]** and document chain of custody.",
-    "escalate": false,
-    "tags": ["manager","equipment"]
-  },
-  {
-    "id": "mgr_incident",
-    "patterns": ["safety incident","injury at work","work injury","incident report"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 85,
-    "answer": "If urgent, contact emergency services. Then log the incident in **[CLIENT]**’s EHS system and notify **[EOR]** immediately so they can handle reporting and benefits guidance.",
-    "escalate": true,
-    "tags": ["manager","safety"]
-  },
-  {
-    "id": "mgr_conduct_escalation",
-    "patterns": ["harassment","code of conduct","complaint","inappropriate behavior"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 90,
-    "answer": "Acknowledge the concern. Capture facts, avoid promises, and notify **[CLIENT]** HR immediately. Also alert **[EOR]** HR so both employer and site can coordinate next steps.",
-    "escalate": true,
-    "tags": ["manager","conduct"]
-  },
-  {
-    "id": "mgr_schedule",
-    "patterns": ["schedule change","shift swap","remote day","flex schedule"],
-    "intent": "manager_help",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Set expectations in team norms. For W-2 via **[EOR]**, ensure schedule changes still meet **[EOR]** timekeeping/OT rules. Document approvals in writing.",
-    "escalate": false,
-    "tags": ["manager","schedule"]
-  },
+        // Demo FAQ data
+        const demoData = {
+            employee: [
+                {
+                    keywords: ['eor', 'employer of record', 'staffing', 'agency', 'who is my employer'],
+                    types: ['W2_Contingent'],
+                    answer: "📋 **Understanding Your W2 Contingent Employment:**\n\n**Who's Your Employer?**\nCheck your paystub - that company is your legal employer.\n\n**As a W2 Contingent Worker:**\n• You work ON-SITE at [Client Company]\n• But [EOR] is on your paystub (like Randstad, Adecco, Manpower)\n• [EOR] = Your legal employer\n• [Client Company] = Where you physically work\n\n**The Three Players:**\n• **[EOR]** = Your legal employer (paystub, W-2, benefits)\n• **[Client Company]** = Your work location\n• **AuniConnect** = Coordination partner\n\n**Who Handles What:**\n• Pay, benefits, PTO, taxes, W-2 → [EOR]\n• Daily work, tasks, projects → Your supervisor at [Client Company]\n• Assignment questions → Your AuniConnect contact\n\n**Important:** Your AuniConnect contact is NOT your manager or employer!"
+                },
+                {
+                    keywords: ['benefits', 'benifits', 'insurance', 'health', 'medical', 'dental', 'vision'],
+                    types: ['W2_Contingent'],
+                    answer: "W2 Contingent Benefits:\n\n**Your Benefits Come From:**\n[BENEFITS_PROVIDER]\n\n**Typical Benefits:**\n• Medical, dental, vision\n• 401(k) with match\n• PTO and sick days\n• Life and disability\n\n**How to Enroll:**\nLog into [BENEFITS_PROVIDER]'s benefits portal or contact their HR team."
+                },
+                {
+                    keywords: ['pto', 'vacation', 'time off', 'request time off', 'take time off'],
+                    types: ['W2_Contingent'],
+                    answer: "PTO for W2 Contingent:\n\n**Your PTO is Managed By:**\n[PTO_PROVIDER]\n\n**Typical PTO:**\n• 10-20 vacation days/year\n• 5-10 sick days/year\n• Request 2+ weeks in advance\n\n**How to Request:**\nSubmit PTO requests through [PTO_PROVIDER]'s portal or employee system."
+                },
+                {
+                    keywords: ['pay', 'paycheck', 'paid', 'salary', 'wage', 'when do i get paid', 'payday'],
+                    types: ['W2_Contingent'],
+                    answer: "W2 Contingent Payroll:\n\n**Who Pays You:**\n[PAYROLL_PROVIDER] (check your paystub!)\n\n**Schedule:** Usually bi-weekly, direct deposit\n**Taxes:** Automatically withheld\n\n**Questions About Pay:**\nContact [PAYROLL_PROVIDER]'s payroll department."
+                },
+                {
+                    keywords: ['timesheet', 'time', 'log time', 'track time', 'clock in', 'log hours', 'enter time'],
+                    types: ['W2_Contingent'],
+                    answer: "Time Tracking for W2 Contingent:\n\n**Where to Log Time:**\n[TIME_SYSTEM]\n\n**How It Works:**\n• Clock in/out via portal or time clock\n• Submit weekly (usually by Friday 5pm)\n• Manager approves\n• Late submissions = delayed paycheck!\n\n**Access Issues:**\n[ACCESS_HELP]"
+                },
+                {
+                    keywords: ['benefits', 'benifits', 'insurance', 'health', 'medical', 'dental', 'vision'],
+                    types: ['1099'],
+                    answer: "1099 Contractor - No Benefits:\n\n**Reality Check:** As a 1099 contractor, [Client Company] provides ZERO benefits. You're self-employed.\n\n**What You DON'T Get:**\n❌ No company health insurance\n❌ No 401(k) matching\n❌ No paid time off\n❌ No unemployment benefits\n\n**Your Options:**\n• Healthcare.gov for insurance\n• Solo 401(k) or SEP IRA\n• Private disability insurance\n• Build 20-30% extra into your rate\n\n**Are you sure you're 1099?** If you get paychecks (not invoices), you might be W2!"
+                },
+                {
+                    keywords: ['pto', 'vacation', 'time off'],
+                    types: ['1099'],
+                    answer: "1099 Contractor Time Off:\n\n**Reality:** ZERO paid time off. Every day off = no income.\n\n**How to Handle:**\n• Notify [Client Company] 2+ weeks ahead\n• Ensure deliverables are covered\n• Don't invoice for days off\n• Build time off buffer into your rate\n\n**Confused?** If you think you have PTO, check your January tax form - W-2 or 1099-NEC?"
+                },
+                {
+                    keywords: ['timesheet', 'time', 'log time', 'track time', 'log hours', 'enter time'],
+                    types: ['1099'],
+                    answer: "1099 Time Tracking:\n\n**You're the Boss:** Track time however you want.\n\n**Recommended:**\n• Use spreadsheet or time tracking app (Toggl, Harvest)\n• Track for YOUR records and invoicing\n• [Client Company] may have a system for their tracking, but YOUR invoice is official\n\n**What to Track:**\n• Date, hours, task description\n• For invoicing [Client Company]\n• For tax records (prove your hours if audited)\n\n**No Overtime:** You're not an employee - no 1.5x pay!"
+                },
+                {
+                    keywords: ['invoice', 'bill', 'payment', 'get paid', 'invoicing'],
+                    types: ['1099'],
+                    answer: "1099 Contractor Payment:\n\n**How to Get Paid:**\n• Submit invoices to [Client Company] (bi-weekly or per milestone)\n• Payment in 30 days typically\n• NO tax withholding - you handle ALL taxes\n\n**Invoice Must Include:**\n• Your business name/SSN/EIN\n• Hours or deliverables\n• Rate and total amount\n• Payment terms (Net 30)\n\n**Important:**\n• Set aside 25-30% for taxes\n• Track ALL business expenses\n• You'll get 1099-NEC from [Client Company] in January"
+                }
+            ],
+            manager: [
+                {
+                    keywords: ['pto', 'time off', 'team pto', 'approve pto', 'vacation'],
+                    types: ['All'],
+                    answer: "Answering Team PTO Questions:\n\n**For Direct Hire:**\n• Check your company's HR policy\n• You approve scheduling, HR tracks balance\n\n**For W2 Contingent:**\n• Their PTO comes from [EOR], NOT your company\n• Direct them to [EOR]'s HR team\n• You approve scheduling, [EOR] owns the policy\n\n**For 1099:**\n• They have ZERO paid time off\n• All time off is unpaid\n\nKeep a list of your contingent workers' EOR contacts!"
+                },
+                {
+                    keywords: ['benefits', 'insurance', 'team benefits', 'health insurance'],
+                    types: ['All'],
+                    answer: "Answering Team Benefits Questions:\n\n**Direct Hire:** Your company's HR\n**W2 Contingent:** Their [EOR]'s benefits team (NOT your company!)\n**1099:** No company benefits - they're self-employed\n\n**Common confusion:** Contingent workers think your company provides benefits. Direct them to their [EOR] (check their paystub!)."
+                },
+                {
+                    keywords: ['payroll', 'paycheck', 'pay issue', 'salary'],
+                    types: ['All'],
+                    answer: "Answering Team Payroll Questions:\n\n**Direct Hire:** Your payroll department\n**W2 Contingent:** Their [EOR] handles payroll, NOT your company\n**1099:** They invoice your accounts payable\n\nYou CANNOT access contingent workers' pay info. Direct them to their [EOR]'s payroll team."
+                },
+                {
+                    keywords: ['productivity', 'productive', 'efficiency', 'get more done', 'time management'],
+                    types: ['All'],
+                    answer: "Productivity Tips for Managers:\n\n**Your Personal Productivity:**\n• Block calendar: Deep work (9-11am), Team time (11-12pm), Meetings (1-3pm), Admin (3-5pm)\n• Batch similar tasks together\n• Use 'No Meeting Wednesday' for focus time\n• Turn off Slack notifications during focus blocks\n\n**Team Productivity:**\n• Set clear weekly priorities (3 max)\n• Daily 15-min standup to unblock issues\n• Async updates instead of status meetings\n• Celebrate wins to maintain momentum\n\n**Common Mistake:** Trying to be available 24/7. Your team needs focused work time too!"
+                },
+                {
+                    keywords: ['prioritize', 'priorities', 'prioritization', 'what to focus on', 'too much work'],
+                    types: ['All'],
+                    answer: "Prioritization Framework:\n\n**The 2x2 Matrix:**\n• Urgent + Important = Do NOW\n• Important + Not Urgent = SCHEDULE it\n• Urgent + Not Important = DELEGATE it\n• Neither = DELETE it\n\n**For Your Team:**\n1. List everything\n2. Ask: What has the biggest impact?\n3. Pick TOP 3 for this week\n4. Say NO to everything else\n\n**Weekly Ritual:**\nMonday: Set top 3 priorities\nFriday: Review what shipped\n\n**Pro Tip:** If everything is urgent, nothing is. Help your team say no."
+                },
+                {
+                    keywords: ['delegate', 'delegation', 'delegating', 'empower', 'give work'],
+                    types: ['All'],
+                    answer: "Delegation Guide:\n\n**What to Delegate:**\n✅ Tasks others can do 70%+ as well\n✅ Recurring operational work\n✅ Tasks that develop skills\n✅ Work you don't enjoy (if someone else does)\n\n**What NOT to Delegate:**\n❌ Performance reviews\n❌ Sensitive HR issues\n❌ Strategic planning\n❌ Your 1:1s\n\n**How to Delegate Well:**\n1. Pick the right person (skill + capacity)\n2. Explain the OUTCOME, not the method\n3. Provide context (why it matters)\n4. Agree on check-ins\n5. Give authority with responsibility\n6. Don't micromanage!\n\n**New Manager Trap:** Doing everything yourself because 'it's faster.' It's not scalable!"
+                },
+                {
+                    keywords: ['communication', 'communicate', 'clear communication', 'messaging'],
+                    types: ['All'],
+                    answer: "Clear Communication Tips:\n\n**The 3 Cs:**\n• **Clear:** What exactly needs to happen?\n• **Concise:** No 5 paragraphs when 3 sentences work\n• **Context:** Why does this matter?\n\n**Choose the Right Channel:**\n• Slack: Quick questions, FYIs\n• Email: Documentation, decisions\n• Meeting: Discussion, decisions, brainstorming\n• 1:1: Feedback, coaching, personal topics\n\n**For Big Announcements:**\n1. Tell them what you're going to tell them\n2. Tell them\n3. Tell them what you told them\n\n**Over-communicate changes:** Say it 7 times before people really hear it."
+                },
+                {
+                    keywords: ['meetings', 'too many meetings', 'meeting overload', 'run meetings', 'facilitate'],
+                    types: ['All'],
+                    answer: "Meeting Management:\n\n**Before Scheduling:**\n• Ask: Could this be an email?\n• Default to 25 or 50 min (not 30/60)\n• Invite only decision-makers\n\n**Every Meeting Needs:**\n• Clear objective in the title\n• Agenda sent 24hrs before\n• One owner/facilitator\n• Notes + action items after\n\n**During the Meeting:**\n• Start on time (even if people are late)\n• Park off-topic items\n• End with: Who's doing what by when?\n\n**Types of Meetings:**\n• Daily standup: 15 min max\n• 1:1s: 30 min weekly\n• Planning: 60-90 min monthly\n\n**Cancel bad meetings!** Your team will thank you."
+                },
+                {
+                    keywords: ['goals', 'goal setting', 'objectives', 'okr', 'targets', 'kpi'],
+                    types: ['All'],
+                    answer: "Goal Setting Framework:\n\n**Weekly Team Goals:**\n• Pick 1-3 goals MAX\n• Make them SMART: Specific, Measurable, Achievable, Relevant, Time-bound\n• Each goal has: Owner, Deadline, Success criteria\n\n**Example:**\n❌ Bad: 'Improve performance'\n✅ Good: 'Reduce page load time to <2sec by Friday (Owner: Alex)'\n\n**Share Goals Visibly:**\n• Monday: Post goals in team channel\n• Wednesday: Quick status check\n• Friday: Celebrate what shipped\n\n**Individual Goals:**\n• Quarterly career development goals\n• Monthly skill-building targets\n• Weekly output goals\n\n**Track 3 Metrics:** Throughput, Quality, Velocity"
+                },
+                {
+                    keywords: ['difficult conversation', 'tough conversation', 'hard feedback', 'confrontation', 'uncomfortable'],
+                    types: ['All'],
+                    answer: "Handling Difficult Conversations:\n\n**Prepare:**\n• What outcome do you want?\n• What are the facts? (not assumptions)\n• Practice your opening line\n• Pick the right time and place (private!)\n\n**During:**\n• Start direct: 'I need to talk about [X]'\n• State the facts: 'I noticed [behavior]'\n• Explain impact: 'This affects [team/project]'\n• Listen MORE than you talk (60/40 rule)\n• Ask: 'What's going on from your side?'\n• End with: 'Here's what needs to change by when'\n\n**Don't:**\n❌ Use 'compliment sandwiches' (they dilute message)\n❌ Apologize for giving feedback\n❌ Email difficult feedback (always face-to-face)\n\n**Follow Up:**\n• Document the conversation\n• Check in within a week\n• Loop in HR if needed"
+                },
+                {
+                    keywords: ['trust', 'build trust', 'team trust', 'psychological safety'],
+                    types: ['All'],
+                    answer: "Building Team Trust:\n\n**Do This:**\n✅ Admit when you don't know\n✅ Share your mistakes openly\n✅ Ask for feedback and ACT on it\n✅ Keep commitments (if you say it, do it)\n✅ Give credit publicly\n✅ Take blame privately\n\n**Weekly Trust Builders:**\n• Share a personal story in team meeting\n• Ask 'What's blocking you?' and REMOVE it\n• Say 'I was wrong about [X]'\n• Celebrate someone else's idea\n\n**Kill Trust:**\n❌ Taking credit for their work\n❌ Changing priorities without explanation\n❌ Playing favorites\n❌ Not defending them to upper management\n\n**Trust takes months to build, seconds to break.**"
+                },
+                {
+                    keywords: ['remote', 'remote team', 'hybrid', 'distributed', 'virtual team', 'work from home'],
+                    types: ['All'],
+                    answer: "Managing Remote/Hybrid Teams:\n\n**Communication:**\n• Over-communicate: What's obvious to you isn't to them\n• Document everything (decisions, context, why)\n• Default to async updates\n• Video on for 1:1s and team meetings\n\n**Inclusion:**\n• Rotate meeting times for different time zones\n• Call on remote folks FIRST\n• Share recordings and notes within 24hrs\n• Don't make decisions in hallway conversations\n\n**Connection:**\n• Virtual coffee chats (optional, casual)\n• Slack channels for non-work chat\n• Quarterly in-person meetups if possible\n• Start meetings with personal check-ins\n\n**Accountability:**\n• Focus on outputs, not hours\n• Weekly check-ins on priorities\n• Clear deadlines and owners\n\n**Trust your remote team** - they're not slacking off!"
+                },
+                {
+                    keywords: ['conflict', 'conflict resolution', 'team conflict', 'disagreement', 'argument', 'tension'],
+                    types: ['All'],
+                    answer: "Resolving Team Conflict:\n\n**Your Role:** Facilitator, not judge\n\n**Step 1: Understand Each Side**\n• Meet with each person separately\n• Ask: 'What happened from your perspective?'\n• Listen for facts vs feelings\n• Don't take sides yet\n\n**Step 2: Bring Them Together**\n• Neutral space, enough time\n• Set ground rules: Respect, listen, focus on solution\n• Each person shares their perspective\n• You summarize what you heard\n\n**Step 3: Find Common Ground**\n• Ask: 'What do you both want?'\n• Usually they want the same outcome\n• Focus on shared goals\n\n**Step 4: Co-Create Solution**\n• They propose solutions, not you\n• Ask: 'What would resolve this?'\n• Agree on next steps\n\n**Follow Up:**\n• Check in after 1 week\n• Loop in HR if it's not improving"
+                },
+                {
+                    keywords: ['new manager', 'first time manager', 'new to management', 'just promoted', 'manager advice'],
+                    types: ['All'],
+                    answer: "Advice for New Managers:\n\n**First 30 Days:**\n• Have 1:1s with each team member\n• Ask: 'What's working? What's not?'\n• Listen 80%, talk 20%\n• Learn the work (shadow your team)\n• Find a manager mentor\n\n**Common New Manager Mistakes:**\n❌ Trying to be friends with everyone\n❌ Doing all the work yourself\n❌ Avoiding difficult conversations\n❌ Not asking for help\n❌ Changing everything immediately\n\n**Your New Job:**\n• You're measured by your TEAM's output, not yours\n• Your job is to ENABLE them, not do the work\n• You set direction, they execute\n• You remove blockers\n• You develop people\n\n**Remember:** You don't need to know everything. You need to build a team that does.\n\n**Get help:** Find a mentor, read 'The Manager's Path', ask your manager for coaching."
+                },
+                {
+                    keywords: ['performance', 'performance management', 'underperformance', 'low performance', 'not delivering'],
+                    types: ['All'],
+                    answer: "Managing Performance Issues:\n\n**Early Warning Signs:**\n• Missing deadlines\n• Quality dropping\n• Less engaged in meetings\n• Defensive when given feedback\n\n**Act Fast (Don't Wait!):**\n1. Have the conversation within 48 hours\n2. Be specific: 'In the last 2 sprints, you missed 3 deadlines'\n3. Ask: 'What's going on?'\n4. Listen for blockers (skill? motivation? personal?)\n5. Create 2-week plan with clear expectations\n6. Check in 2x/week\n\n**The Plan:**\n• 2-3 specific goals\n• Resources/support needed\n• Check-in schedule\n• Consequence if no improvement\n\n**Document Everything:**\n• Date, what was discussed, agreed plan\n• Follow up in writing\n• CC yourself (for records)\n\n**Loop in HR early** if no improvement after 2 weeks\n\n**For Contingent Workers:** Alert their [EOR] - they handle formal performance management."
+                },
+                {
+                    keywords: ['recognition', 'recognize', 'praise', 'appreciate', 'thank', 'kudos'],
+                    types: ['All'],
+                    answer: "Recognition Best Practices:\n\n**Make It Specific:**\n❌ Bad: 'Great job!'\n✅ Good: 'You caught that bug before release and saved us 3 hours of rollback - awesome!'\n\n**The Formula:**\n[What they did] + [Impact] + [Why it matters]\n\n**When to Recognize:**\n• Daily: Quick Slack kudos\n• Weekly: Shoutout in team meeting\n• Monthly: Bigger recognition (lunch, gift card)\n• Quarterly: Formal recognition to upper management\n\n**What to Recognize:**\n• Results delivered\n• Helping teammates\n• Going above and beyond\n• Living company values\n• Growth and learning\n\n**Public vs Private:**\n• Praise publicly (team channel, meeting)\n• Coach privately (1:1s)\n\n**Recognition ratio:** 3 positive for every 1 constructive feedback\n\n**Don't forget contingent workers!** They need recognition too."
+                },
+                {
+                    keywords: ['coaching', 'coach', 'develop', 'development', 'grow', 'career growth'],
+                    types: ['All'],
+                    answer: "Coaching Your Team:\n\n**Career Development Conversations:**\n• Quarterly: 'Where do you want to be in 6 months?'\n• Monthly: 'What skills are you building?'\n• Weekly: 'What did you learn this week?'\n\n**Coaching Questions:**\n• 'What do you think you should do?'\n• 'What options have you considered?'\n• 'What's blocking you?'\n• 'What would success look like?'\n• 'What support do you need from me?'\n\n**Development Opportunities:**\n• Stretch assignments\n• Shadow other teams\n• Lead a project\n• Present at team meeting\n• Teach others a skill\n\n**For Contingent Workers:**\n• Focus on current project skills\n• Check with [EOR] about formal training programs\n• Share learning resources\n\n**Your job:** Grow people so they outgrow their role (then promote them!)"
+                },
+                {
+                    keywords: ['hiring', 'interview', 'interviewing', 'recruit', 'candidate'],
+                    types: ['All'],
+                    answer: "Hiring Tips:\n\n**Before Interviewing:**\n• Define must-have skills vs nice-to-have\n• Write down your questions\n• Coordinate with team (who asks what?)\n\n**Interview Questions:**\n• Behavioral: 'Tell me about a time when...'\n• Situational: 'How would you handle...'\n• Technical: Skills assessment/demo\n• Culture: 'What environment helps you thrive?'\n\n**Red Flags:**\n🚩 Speaking badly about past employers\n🚩 Taking all credit for team successes\n🚩 Not asking any questions\n🚩 Vague answers without examples\n\n**Green Flags:**\n✅ Specific examples with results\n✅ Talks about team collaboration\n✅ Asks thoughtful questions\n✅ Shows curiosity and growth\n\n**Hire for:**\n• Attitude and learning ability\n• Cultural add (not just fit)\n• Potential, not just experience\n\n**For Contingent Workers:** Work with [EOR]/staffing agency on hiring process."
+                },
+                {
+                    keywords: ['motivation', 'motivate', 'engagement', 'morale', 'energize', 'inspire'],
+                    types: ['All'],
+                    answer: "Quick Motivation Playbook:\n\n• Shorten goals to 1-week wins\n• Clarify 'definition of done'\n• Swap a routine task for a visible impact task\n• Schedule a 15-min unblocker 1:1\n• Recognize progress publicly in team channel\n\n**For contingent workers:** Same approach! They want to deliver impact too."
+                },
+                {
+                    keywords: ['feedback', 'coaching', 'constructive feedback', 'performance'],
+                    types: ['All'],
+                    answer: "Giving Feedback (SBI Model):\n\n• **Situation:** When/where it happened\n• **Behavior:** What they did (observable)\n• **Impact:** The effect it had\n\n**Example:** 'In yesterday's client meeting (S), when you presented without context (B), the client seemed confused (I).'\n\n**For contingent workers:** Focus on deliverables. Loop in [EOR] if trends persist."
+                },
+                {
+                    keywords: ['manage', 'managing', 'contingent', 'contractor', 'team'],
+                    types: ['All'],
+                    answer: "Managing Contingent Workers:\n\n**You're NOT their legal manager!**\n\n**What You CAN Do:**\n• Assign daily work and projects\n• Provide work direction\n• Give feedback on deliverables\n\n**What to AVOID:**\n• Don't conduct performance reviews\n• Don't discuss their pay/benefits\n• Don't promise continued employment\n\n**Route HR questions to their [EOR]**"
+                },
+                {
+                    keywords: ['timesheet', 'time tracking', 'log time', 'clock in'],
+                    types: ['All'],
+                    answer: "Team Time Tracking:\n\n**Direct Hire:** Uses your company's time system\n**W2 Contingent:** Uses [EOR]'s system (may sync with yours)\n**1099 Contractors:** They track their own time - NOT in your system!\n\n**Your role:** \n• W2: Approve hours, ensure accuracy\n• 1099: Just approve/review deliverables (they manage their own time)\n\n**Issues?** Direct contingent workers to [EOR] support."
+                },
+                {
+                    keywords: ['invoice', 'invoicing', 'contractor payment', '1099 payment'],
+                    types: ['All'],
+                    answer: "Managing 1099 Contractor Payments:\n\n**How It Works:**\n• They submit invoices (not timesheets!)\n• Approved invoices go to accounts payable\n• Payment in 30 days typically\n• NO taxes withheld (they're self-employed)\n\n**Your Role:**\n• Review and approve invoices for accuracy\n• Verify deliverables match invoice\n• Submit to AP for payment\n\n**NOT Your Role:**\n• Don't handle payment directly\n• Don't discuss their rates or taxes\n• Don't treat like employees\n\nQuestions? Route to accounts-payable@company.com"
+                },
+                {
+                    keywords: ['1:1', 'one on one', 'check in', 'meeting'],
+                    types: ['All'],
+                    answer: "Effective 1:1s:\n\n**Quick Agenda:**\n• Wins this week\n• Top 3 priorities\n• Blockers/risks\n• What you need from me\n• Recognition\n\n**Keep to 20-30 minutes weekly**\n**Capture action items and dates**\n\n**For contingent workers:** Same format works great!"
+                },
+                {
+                    keywords: ['contractor', '1099', 'freelancer'],
+                    types: ['All'],
+                    answer: "Working with 1099 Contractors:\n\n**Key Differences from W2:**\n• They're self-employed, NOT your employees\n• Focus on DELIVERABLES, not hours/methods\n• They invoice, don't get paychecks\n• NO benefits, PTO, or employment perks\n• You CANNOT control how/when they work\n\n**What You CAN Do:**\n• Set project deadlines\n• Define scope and deliverables\n• Provide feedback on work quality\n\n**What You CANNOT Do:**\n• Require specific hours (9-5)\n• Provide equipment/training\n• Treat like employees (legal risk!)\n\n**For Payment Questions:** Direct to accounts payable"
+                }
+            ]
+        };
 
-  /* =========================
-     Manager – Coaching/Engagement/Productivity
-     ========================= */
-  {
-    "id": "mgr_performance_signal",
-    "patterns": ["performance concern","quality slipping","missed deadlines","performance issue"],
-    "intent": "productivity",
-    "audience": "manager",
-    "priority": 75,
-    "answer": "Use a simple plan: clarify expectations; cite 2–3 examples; agree on a 1–2 week plan with checkpoints; identify blockers and support needed. If no improvement, loop in **[EOR]** (employer) for coaching.",
-    "escalate": false,
-    "tags": ["manager","performance"]
-  },
-  {
-    "id": "mgr_feedback_script",
-    "patterns": ["give feedback","coaching script","constructive feedback","how to give feedback"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Try SBI: Situation, Behavior, Impact. Example: “Yesterday in the client review (S), the deck was 15 minutes late (B), which reduced our Q&A time (I). Let’s commit to a 24-hour dry run.” Keep it job-related; involve **[EOR]** if trends persist.",
-    "escalate": false,
-    "tags": ["manager","feedback"]
-  },
-  {
-    "id": "mgr_1on1_template",
-    "patterns": ["1:1 agenda","check in template","one on one","weekly check in"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Quick 1:1: Wins; Top 3 priorities; Risks/blocked; What I need from you; Recognition shoutouts. Keep to 20–30 minutes weekly; capture actions and dates.",
-    "escalate": false,
-    "tags": ["manager","engagement"]
-  },
-  {
-    "id": "mgr_recognition_prompts",
-    "patterns": ["recognition","kudos","appreciate work","praise"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 65,
-    "answer": "Be specific: what they did + impact at **[CLIENT]**. Example: “Thanks for catching the API error before release—saved hours of rollback.” Post kudos in team channel to model the behavior.",
-    "escalate": false,
-    "tags": ["manager","recognition"]
-  },
-  {
-    "id": "mgr_motivation_low",
-    "patterns": ["motivation low","morale","burnt out","burnout"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 80,
-    "answer": "Signals: slower cycles, fewer updates, defensive tone. Actions: shorten goals to 1-week sprints, clarify ‘definition of done’, swap a routine task for a visible win, and schedule a brief 1:1 to unblock. Recognize progress.",
-    "escalate": false,
-    "tags": ["manager","engagement"]
-  },
-  {
-    "id": "mgr_productivity_quickstart",
-    "patterns": ["productivity","getting unstuck","blocked","stuck"],
-    "intent": "productivity",
-    "audience": "manager",
-    "priority": 75,
-    "answer": "3-step reset: (1) Re-order today’s tasks by impact; pick one 45-minute focus block. (2) Identify the one blocker + owner to remove it. (3) Post a mid-day update in the team channel.",
-    "escalate": false,
-    "tags": ["manager","productivity"]
-  },
-  {
-    "id": "mgr_meeting_cadence",
-    "patterns": ["too many meetings","meeting overload","meeting bloat","inefficient meetings"],
-    "intent": "productivity",
-    "audience": "manager",
-    "priority": 65,
-    "answer": "Default to async updates; keep live meetings for decisions. Cap standups at 10–12 minutes. Use agenda + owner + outcome. End with action items and owners.",
-    "escalate": false,
-    "tags": ["manager","meetings"]
-  },
-  {
-    "id": "mgr_goal_setting",
-    "patterns": ["goals","okr","priorities","set goals"],
-    "intent": "productivity",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Define 1–3 weekly goals tied to **[CLIENT]** outcomes. For each: why it matters, owner, and done-by date. Post goals Monday; status Thursday; wrap Friday with lessons learned.",
-    "escalate": false,
-    "tags": ["manager","goals"]
-  },
-  {
-    "id": "mgr_blocker_escalation",
-    "patterns": ["blocked","dependency","waiting on","unblocked"],
-    "intent": "productivity",
-    "audience": "manager",
-    "priority": 70,
-    "answer": "Escalation template: what is blocked, for whom, when impact hits, and the smallest decision needed. Example: “Blocked on SSO access; deadline EOD Wed; need secops ticket 123 unpaused.”",
-    "escalate": false,
-    "tags": ["manager","escalation"]
-  },
-  {
-    "id": "mgr_kudos_program",
-    "patterns": ["kudos program","recognition wall","peer recognition"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 60,
-    "answer": "Encourage weekly peer kudos: require ‘specific behavior + impact at **[CLIENT]**’. Share top kudos in retro. Use tags (Teamwork, Ownership) to align with values.",
-    "escalate": false,
-    "tags": ["manager","kudos"]
-  },
-  {
-    "id": "mgr_onboarding_week1",
-    "patterns": ["onboarding plan","first week","day 1","new hire plan"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 75,
-    "answer": "Week 1: laptop/access; team intro; sample tasks; demo data; a buddy; first deliverable by Day 3; 30-min retro end of week. Confirm **[EOR]** time/benefits steps are complete.",
-    "escalate": false,
-    "tags": ["manager","onboarding"]
-  },
-  {
-    "id": "mgr_remote_inclusion",
-    "patterns": ["remote","hybrid","inclusion","async norms"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 60,
-    "answer": "Inclusive habits: rotate meeting times, document decisions, call on remote voices first, and use written status updates. Share recordings/notes within 24 hours.",
-    "escalate": false,
-    "tags": ["manager","inclusion"]
-  },
-  {
-    "id": "mgr_training_budget",
-    "patterns": ["training","upskill","learning","course"],
-    "intent": "engagement",
-    "audience": "manager",
-    "priority": 55,
-    "answer": "If training is permitted, confirm with **[CLIENT]** and **[EOR]** on eligibility and funding. Low-lift options: internal wikis, shadowing, 30-minute show-and-tell sessions.",
-    "escalate": false,
-    "tags": ["manager","learning"]
-  },
-  {
-    "id": "mgr_kpi_dashboard",
-    "patterns": ["metrics","dashboard","velocity","throughput","quality"],
-    "intent": "productivity",
-    "audience": "manager",
-    "priority": 60,
-    "answer": "Track 3 signals: throughput (tasks/week), predictability (planned vs done), quality (defects). Review Mondays; remove one blocker weekly.",
-    "escalate": false,
-    "tags": ["manager","metrics"]
-  },
-  {
-    "id": "mgr_confusion_check",
-    "patterns": ["who is my employer","manager at staffing","ask the client","which company handles benefits"],
-    "intent": "eor_education",
-    "audience": "manager",
-    "priority": 90,
-    "answer": "Clarify roles: **[EOR]** is the employer (pay/benefits/HR). **[CLIENT]** directs daily work. Route HR/payroll to **[EOR]**; keep tasking and approvals within **[CLIENT]**.",
-    "escalate": false,
-    "tags": ["manager","confusion"]
-  }
-  {
-  "id": "emp_benefits_general",
-  "patterns": ["benefits","benefit","medical","dental","vision","insurance","benefits enrollment","enroll benefits","open enrollment"],
-  "intent": "benefits",
-  "audience": "employee",
-  "priority": 80,
-  "answer": "Benefits for **[WORKER_TYPE]** are administered by **[EOR]** (the employer on your paystub), not **[CLIENT]**. Sign in to **[EOR]**’s benefits portal or contact **[EOR]** HR for plan options and deadlines.",
-  "escalate": false,
-  "tags": ["employee","benefits"]
-},
-{
-  "id": "mgr_motivation_general",
-  "patterns": ["motivation","motivate","engagement","energize"],
-  "intent": "engagement",
-  "audience": "manager",
-  "priority": 78,
-  "answer": "Quick motivation playbook: shorten goals to 1-week wins, clarify a tight ‘definition of done’, swap one rote task for a visible impact task, and schedule a 15-min unblocker 1:1. Recognize progress publicly in the team channel.",
-  "escalate": false,
-  "tags": ["manager","engagement","motivation"]
-}
-
-]
-  </script>
-
-  <script>
-    // -----------------------
-    // State & profile badges
-    // -----------------------
-    let currentMode = 'employee';    // 'employee' | 'manager'
-    let FAQ_ROWS = [];               // populated from inline JSON
-    let sessionProfile = { client:null, employer:null, typeHint:null };
-
-    function saveProfile(){ try{ localStorage.setItem('auni_profile', JSON.stringify(sessionProfile)); }catch(e){} }
-    function loadProfile(){
-      try{
-        const raw = localStorage.getItem('auni_profile');
-        if(raw) Object.assign(sessionProfile, JSON.parse(raw));
-      }catch(e){}
-    }
-
-    function updateBadges(){
-      const detBadge = document.getElementById('detectionBadge');
-      const clientBadge = document.getElementById('clientBadge');
-      const emplBadge = document.getElementById('employerBadge');
-
-      detBadge.innerHTML   = sessionProfile.typeHint ? `<span class="badge badge-detection">${sessionProfile.typeHint === 'W2_Contingent' ? 'W2 Contingent' : sessionProfile.typeHint}</span>` : '';
-      clientBadge.innerHTML= sessionProfile.client    ? `<span class="badge badge-client">@ ${sessionProfile.client}</span>` : '';
-      emplBadge.innerHTML  = sessionProfile.employer  ? `<span class="badge badge-employer">Employed by: ${sessionProfile.employer}</span>` : '';
-    }
-
-    // -----------------------
-    // Detection dictionaries
-    // -----------------------
-    const DETECT = {
-      w2: ["paycheck","paystub","withholding","pto","benefits enrollment","benefits","benifits","report time", "timesheet","clock in"],
-      w2_contingent: ["staffing company","eor","placed at","assignment","my recruiter","staffing"],
-      c1099: ["invoice","bill","freelance","my rate","quarterly taxes","deduct expenses","invoicing"],
-      confusion: ["my manager at ","i work for ","my boss at ","i thought you were my manager"]
-    };
-    const COMPANY_WORDS = {
-      knownClients: ["Google","Microsoft","Amazon","Meta","Apple","Netflix"],
-      knownEmployers: ["Randstad","Adecco","Manpower","Aerotek","Robert Half","Kelly","Kforce"]
-    };
-
-    function detectCompanies(msg){
-      const m = msg;
-      const foundClient   = COMPANY_WORDS.knownClients.find(c => m.includes(c.toLowerCase()));
-      const foundEmployer = COMPANY_WORDS.knownEmployers.find(e => m.includes(e.toLowerCase()));
-      if(foundClient)  sessionProfile.client   = foundClient;
-      if(foundEmployer)sessionProfile.employer = foundEmployer;
-    }
-
-    function inferWorkerType(msg){
-      const m = msg;
-      let score = { '1099':0, 'W2':0, 'Contingent':0 };
-      DETECT.c1099.forEach(k => { if(m.includes(k)) score['1099'] += 2; });
-      DETECT.w2.forEach(k => { if(m.includes(k)) score['W2'] += 2; });
-      DETECT.w2_contingent.forEach(k => { if(m.includes(k)) { score['W2']++; score['Contingent'] += 2; } });
-      const max = Math.max(score['1099'], score['W2']);
-      let type = null;
-      if (max >= 2) {
-        type = score['1099'] > score['W2'] ? '1099' : 'W2';
-        if (score['Contingent'] >= 2 && type === 'W2') type = 'W2_Contingent';
-      }
-      return type || sessionProfile.typeHint || 'Unknown';
-    }
-
-    function detectConfusion(msg){ return DETECT.confusion.some(k => msg.includes(k.trim())); }
-
-    // -----------------------
-    // JSON loader (inline)
-    // -----------------------
-    (function loadInlineJson(){
-      const raw = document.getElementById('faq-json')?.textContent || '[]';
-      try{
-        FAQ_ROWS = JSON.parse(raw).map(r => ({
-          ...r,
-          patterns: Array.isArray(r.patterns) ? r.patterns.map(s => (s||'').toLowerCase()) : [],
-          priority: Number(r.priority || 0),
-          tags: Array.isArray(r.tags) ? r.tags : []
-        }));
-        console.log('FAQ loaded (inline JSON):', FAQ_ROWS.length);
-      }catch(e){ console.warn('Inline JSON parse error:', e.message); }
-    })();
-
-    // -----------------------
-    // Helpers
-    // -----------------------
-    const typos = {
-      'benifits':'benefits','benfits':'benefits','bennefits':'benefits',
-      'vaccation':'vacation','vacaton':'vacation','insurence':'insurance',
-      'holliday':'holiday','payed':'paid','timeoff':'time off'
-    };
-    function normalizeText(text){
-      let t = text.toLowerCase();
-      Object.keys(typos).forEach(k => { t = t.replace(new RegExp('\\b'+k+'\\b','gi'), typos[k]); });
-      return t;
-    }
-
-    function personalize(answer){
-      const client = sessionProfile.client || 'the client';
-      const eor    = sessionProfile.employer || 'your employer (on your paystub)';
-      const worker = sessionProfile.typeHint || 'W-2';
-      return (answer||'')
-        .replaceAll('[CLIENT]', client)
-        .replaceAll('[EMPLOYER]', eor)
-        .replaceAll('[EOR]', eor)
-        .replaceAll('[WORKER_TYPE]', worker)
-        .replaceAll('[Client Company]', client); // legacy placeholder in your old text
-    }
-
-    function bestAnswerFor(msg, audience='employee'){
-      const m = normalizeText(msg);
-      const scored = FAQ_ROWS
-        .filter(r => !r.audience || r.audience === audience)
-        .map(r => {
-          const hits = (r.patterns||[]).reduce((a,p)=> a + (p && m.includes(p) ? 1 : 0), 0);
-          return { r, score: hits*10 + r.priority };
-        })
-        .filter(x => x.score > 0)
-        .sort((a,b)=> b.score - a.score);
-      return scored[0]?.r || null;
-    }
-
-    async function handleUserMessage(msg, audience='employee'){
-      const lower = normalizeText(msg);
-
-      // Detect companies + type
-      detectCompanies(lower);
-      sessionProfile.typeHint = inferWorkerType(lower);
-      saveProfile();
-      updateBadges();
-
-      // Greetings & thanks
-      if (/\b(hi|hello|hey)\b/.test(lower)) {
-        return audience === 'employee'
-          ? "Hello! 😊 I’ll figure out your employment type from your questions. Just ask away!"
-          : "Hello! 👔 I’m here to help you answer your team’s PTO/benefits questions.";
-      }
-      if (/\b(thank|thanks)\b/.test(lower)) return "You're welcome! 🌟";
-	  
-	  // Benefits safety net (runs even if no FAQ matched)
-if (/\bbenefit(s)?\b/.test(lower)) {
-  // If type is unknown, assume W-2 for benefits context
-  if (!sessionProfile.typeHint || sessionProfile.typeHint === 'Unknown') {
-    sessionProfile.typeHint = 'W-2';
-    saveProfile();
-    updateBadges();
-  }
-  // Use placeholders and personalize so [CLIENT]/[EOR] get sensible fallbacks
-  const tmpl = "Benefits for **[WORKER_TYPE]** are handled by **[EOR]**, not [CLIENT]. Log into **[EOR]**’s benefits portal or contact their HR for plan options and deadlines.";
-  return personalize(tmpl);
-}
-
-
-      // Confusion override
-      const confusion = detectConfusion(lower);
-
-      let picked = bestAnswerFor(lower, audience);
-      if (confusion) {
-        const edu = FAQ_ROWS.find(r => r.intent === 'eor_education' && (!r.audience || r.audience === audience));
-        if (edu) picked = edu;
-      }
-
-      if (!picked) return "I'm not finding a match. Try asking about:\n\n• Benefits and insurance\n• PTO and time off\n• Payroll and paystubs\n• Who your employer is";
-
-      // Compose response
-      let response = personalize(picked.answer);
-      if (confusion) {
-        const c = sessionProfile.client   || '[your client]';
-        const e = sessionProfile.employer || '[your employer]';
-        response += `\n\n💡 **Quick clarification:**\n• You work ON-SITE at **${c}**\n• You’re employed BY **${e}** (check paystub)\n• ${e} handles pay/benefits/HR — not ${c}`;
-      }
-
-      // Type banner if confident
-      if (sessionProfile.typeHint && sessionProfile.typeHint !== 'Unknown') {
-        const label = sessionProfile.typeHint === 'W2_Contingent' ? 'W2 contingent worker' : sessionProfile.typeHint;
-        response = `🔍 Based on your question, you're a **${label}**.\n\n` + response;
-      }
-      return response;
-    }
-
-    // -----------------------
-    // UI wiring
-    // -----------------------
-    function toggleQuickSetup(){
-      const el = document.getElementById('quickSetup');
-      el.classList.toggle('active');
-    }
-    function setClient(name){ sessionProfile.client = name; saveProfile(); updateBadges(); addMessage(`I work at ${name}`,'user'); setTimeout(()=>addMessage(`Got it! You work at ${name}. I'll personalize my answers for you!`,'bot'), 500); }
-    function setEmployer(name){ sessionProfile.employer = name; saveProfile(); updateBadges(); addMessage(`I'm employed by ${name}`,'user'); setTimeout(()=>addMessage(`Perfect! ${name} is your employer. I'll direct you to them for HR questions.`,'bot'), 500); }
-
-    function switchMode(mode, btn){
-      currentMode = mode;
-      document.getElementById('btnEmployee').classList.remove('active');
-      document.getElementById('btnManager').classList.remove('active');
-      btn.classList.add('active');
-
-      const chatMessages = document.getElementById('chatMessages');
-      chatMessages.innerHTML = '';
-
-      const desc = document.getElementById('modeDescription');
-      if (mode === 'employee') {
-        desc.childNodes[0].textContent = 'Smart Employment Assistant';
-        addMessage("Hi! 👤 I'm here to answer your employment questions. I'll figure out your type from your questions - just ask!", 'bot');
-      } else {
-        desc.childNodes[0].textContent = 'Manager Support - Team Q&A Helper';
-        addMessage("Hi! 👔 I'm here to help you answer your team's PTO and benefits questions, especially for contingent workers!", 'bot');
-      }
-      updateBadges();
-    }
-
-    function addMessage(text, sender){
-      const messages = document.getElementById('chatMessages');
-      const div = document.createElement('div');
-      div.className = `message ${sender}`;
-      div.innerHTML = `
-        <div class="message-avatar">${sender === 'bot' ? 'A' : 'You'}</div>
-        <div class="message-content">${text}</div>
-      `;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
-
-    function handleKeyPress(e){ if(e.key === 'Enter') handleSend(); }
-
-    function handleSend(){
-      const input = document.getElementById('chatInput');
-      const raw = input.value.trim();
-      if (!raw) return;
-
-      addMessage(raw, 'user');
-      input.value = '';
-
-      const messages = document.getElementById('chatMessages');
-      const typing = document.createElement('div');
-      typing.className = 'message bot';
-      typing.innerHTML = `
-        <div class="message-avatar">A</div>
-        <div class="typing-indicator active">
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-        </div>`;
-      messages.appendChild(typing);
-
-      setTimeout(async () => {
-        typing.remove();
-        const audience = (currentMode === 'manager') ? 'manager' : 'employee';
-        const response = await handleUserMessage(raw, audience);
-        addMessage(response, 'bot');
-      }, 800);
-    }
-
-    // Optional: keep CSV upload working (will overwrite FAQs in-memory)
-    function handleCSVUpload(event){
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        try{
-          parseCSV(e.target.result);
-          addMessage("✅ CSV loaded! Your custom Q&As are active.", 'bot');
-        }catch(err){
-          addMessage("❌ Error loading CSV. Check format.", 'bot');
+        // Initialize
+        function init() {
+            faqData = demoData;
+            switchMode('employee', { target: document.querySelector('.mode-btn') });
         }
-      };
-      reader.readAsText(file);
-    }
-    function parseCSV(text){
-      const lines = text.split(/\r?\n/).filter(Boolean);
-      const parsed = [];
-      // Expect header like: id,pattern,intent,audience,priority,answer,escalate,tags
-      lines.shift();
-      for(const line of lines){
-        const cols = splitCsv(line);
-        if (!cols.length) continue;
-        const [id, pattern, intent, audience, priority, answer, escalate, tags] = cols;
-        parsed.push({
-          id: (id||'').trim(),
-          patterns: (pattern||'').split(/[;,]/).map(s=>s.trim().toLowerCase()).filter(Boolean),
-          intent: (intent||'').trim(),
-          audience: (audience||'employee').trim(),
-          priority: Number(priority||0),
-          answer: (answer||'').trim(),
-          escalate: String(escalate||'no').toLowerCase()==='yes',
-          tags: (tags||'').split(/[;,]/).map(s=>s.trim()).filter(Boolean)
-        });
-      }
-      FAQ_ROWS = parsed;
-      console.log('FAQ reloaded from CSV:', FAQ_ROWS.length);
-    }
-    function splitCsv(line){
-      const out=[]; let cur=''; let q=false;
-      for(let i=0;i<line.length;i++){
-        const ch=line[i];
-        if(ch === '"'){ q=!q; continue; }
-        if(ch === ',' && !q){ out.push(cur); cur=''; continue; }
-        cur += ch;
-      }
-      out.push(cur);
-      return out;
-    }
 
-    // Boot
-    (function init(){
-      loadProfile();
-      switchMode('employee', document.getElementById('btnEmployee'));
-      updateBadges();
-    })();
-  </script>
+        // UI Functions
+        function toggleQuickSetup() {
+            document.getElementById('quickSetup').classList.toggle('active');
+        }
+
+        function setClient(company) {
+            clientCompany = company;
+            updateBadges();
+            addMessage(`I work at ${company}`, 'user');
+            setTimeout(() => {
+                addMessage(`Got it! You work at ${company}. I'll personalize my answers!`, 'bot');
+            }, 500);
+        }
+
+        function setEmployer(company) {
+            employerCompany = company;
+            updateBadges();
+            addMessage(`I'm employed by ${company}`, 'user');
+            setTimeout(() => {
+                addMessage(`Perfect! ${company} is your employer. I'll direct you to them for HR questions.`, 'bot');
+            }, 500);
+        }
+
+        function setEmploymentType(type) {
+            detectedType = type;
+            
+            // Clear employer if switching to 1099
+            if (type === '1099') {
+                employerCompany = null;
+            }
+            
+            // Enable/disable EOR buttons based on type
+            const eorButtons = document.querySelectorAll('[onclick^="setEmployer"]');
+            const eorSection = eorButtons[0]?.closest('div').parentElement;
+            
+            if (type === '1099') {
+                eorButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.4';
+                    btn.style.cursor = 'not-allowed';
+                });
+                if (eorSection) {
+                    eorSection.style.opacity = '0.5';
+                }
+            } else {
+                eorButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                });
+                if (eorSection) {
+                    eorSection.style.opacity = '1';
+                }
+            }
+            
+            updateBadges();
+            
+            const typeLabel = type === 'W2_Contingent' ? 'W2 Contingent Worker' : 
+                             '1099 Independent Contractor';
+            
+            addMessage(`Set my employment type: ${typeLabel}`, 'user');
+            
+            setTimeout(() => {
+                let response = `✅ Employment type set to **${typeLabel}**!`;
+                
+                if (type === 'W2_Contingent') {
+                    response += '\n\n📌 **Important:** Set your EOR/Staffing company below (the company on your paystub). This is who handles your pay, benefits, and PTO!';
+                } else if (type === '1099') {
+                    response += '\n\n📌 As a 1099 contractor, you\'re self-employed. No EOR needed - just set your client company!';
+                }
+                
+                addMessage(response, 'bot');
+            }, 500);
+        }
+
+        function updateBadges() {
+            const detBadge = document.getElementById('detectionBadge');
+            const clientBadge = document.getElementById('clientBadge');
+            const emplBadge = document.getElementById('employerBadge');
+
+            // Only show detection badge in employee mode
+            if (currentMode === 'employee' && detectedType) {
+                detBadge.innerHTML = `<span class="badge badge-detection">${detectedType === 'W2_Contingent' ? 'W2 Contingent' : detectedType}</span>`;
+            } else {
+                detBadge.innerHTML = '';
+            }
+
+            clientBadge.innerHTML = clientCompany ? `<span class="badge badge-client">@ ${clientCompany}</span>` : '';
+            emplBadge.innerHTML = employerCompany ? `<span class="badge badge-employer">Employed by: ${employerCompany}</span>` : '';
+        }
+
+        function switchMode(mode, event) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = '';
+
+            const desc = document.getElementById('modeDescription');
+            if (mode === 'employee') {
+                desc.childNodes[0].textContent = 'Smart Employment Assistant';
+                addMessage("Hi! 👤 I'm here to answer your employment questions. I'll figure out your type from your questions - just ask!", 'bot');
+            } else {
+                desc.childNodes[0].textContent = 'Manager Coaching & Team Support';
+                addMessage("Hi! 👔 I'm your manager coach! Ask me about:\n\n• Leadership skills (productivity, delegation, communication)\n• Team management (1:1s, feedback, performance)\n• Coaching new managers\n• Answering team's PTO/benefits questions\n\nWhat can I help with?", 'bot');
+            }
+            updateBadges();
+        }
+
+        // Detection
+        function detectCompanies(msg) {
+            const lower = msg.toLowerCase();
+            patterns.clients.forEach(c => {
+                if (lower.includes(c)) clientCompany = c.charAt(0).toUpperCase() + c.slice(1);
+            });
+            patterns.eors.forEach(e => {
+                if (lower.includes(e)) {
+                    employerCompany = e.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                }
+            });
+        }
+
+        function detectType(msg) {
+            const lower = msg.toLowerCase();
+            let score = { '1099': 0, 'W2_Contingent': 0 };
+
+            patterns.indicators_1099.forEach(i => { if (lower.includes(i)) score['1099'] += 2; });
+            patterns.indicators_w2.forEach(i => { if (lower.includes(i)) score['W2_Contingent'] += 2; });
+            patterns.indicators_contingent.forEach(i => { if (lower.includes(i)) score['W2_Contingent'] += 2; });
+
+            const max = Math.max(score['1099'], score['W2_Contingent']);
+            if (max >= 2) {
+                return score['1099'] > score['W2_Contingent'] ? '1099' : 'W2_Contingent';
+            }
+
+            return null;
+        }
+
+        function detectConfusion(msg) {
+            return patterns.confusion.some(s => msg.toLowerCase().includes(s));
+        }
+
+        // Matching
+        function normalizeText(text) {
+            let normalized = text.toLowerCase();
+            Object.keys(typos).forEach(typo => {
+                normalized = normalized.replace(new RegExp('\\b' + typo + '\\b', 'gi'), typos[typo]);
+            });
+            return normalized;
+        }
+
+        function findMatch(msg) {
+            const faqs = faqData[currentMode] || [];
+            const normalized = normalizeText(msg);
+            let bestMatch = null;
+            let bestScore = 0;
+
+            // Filter FAQs by employment type if in employee mode
+            const filteredFaqs = faqs.filter(faq => {
+                if (currentMode === 'employee' && detectedType) {
+                    // Only include FAQs that match the detected type or are for 'All' types
+                    return faq.types.includes(detectedType) || faq.types.includes('All');
+                }
+                // In manager mode, include all FAQs
+                return true;
+            });
+
+            // Search within filtered FAQs
+            filteredFaqs.forEach(faq => {
+                faq.keywords.forEach(kw => {
+                    if (normalized.includes(kw.toLowerCase())) {
+                        const score = 0.95;
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestMatch = faq;
+                        }
+                    }
+                });
+            });
+
+            return { answer: bestMatch?.answer, confidence: bestScore };
+        }
+
+        // Response generation
+        function getResponse(msg) {
+            const lower = normalizeText(msg);
+
+            // Detect companies
+            detectCompanies(lower);
+
+            // Only detect type in employee mode
+            if (currentMode === 'employee') {
+                const type = detectType(lower);
+                if (type) detectedType = type;
+            }
+
+            updateBadges();
+
+            // Greetings
+            if (lower.match(/\b(hi|hello|hey)\b/)) {
+                return currentMode === 'employee'
+                    ? "Hello! 😊 I'll figure out your employment type from your questions. Just ask away!"
+                    : "Hello! 👔 I'm here to help you answer your team's employment questions!";
+            }
+
+            // Thanks
+            if (lower.match(/\b(thank|thanks)\b/)) {
+                return "You're welcome! 🌟";
+            }
+
+            // Find matching answer
+            const match = findMatch(msg);
+
+            if (match.answer && match.confidence > 0.6) {
+                let response = match.answer;
+
+                // Smart placeholder replacement based on employment type
+                const client = clientCompany || 'your client company';
+                const eor = employerCompany || 'your EOR/staffing company';
+
+                if (detectedType === '1099') {
+                    // 1099: No employer, just client
+                    response = response.replace(/\[EOR\]/g, 'N/A (you\'re self-employed)');
+                    response = response.replace(/\[Client Company\]/g, client);
+                } else if (detectedType === 'W2_Contingent') {
+                    // W2 Contingent: Split between EOR and Client
+                    response = response.replace(/\[Client Company\]/g, client);
+                    response = response.replace(/\[EOR\]/g, eor);
+                    response = response.replace(/\[BENEFITS_PROVIDER\]/g, `${eor} (your employer)`);
+                    response = response.replace(/\[PTO_PROVIDER\]/g, eor);
+                    response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
+                    response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s time system (may sync with ${client}'s)`);
+                    response = response.replace(/\[ACCESS_HELP\]/g, `For ${eor} portal/paystubs: Contact ${eor} support. For ${client} work systems: Contact your manager or ${client} IT.`);
+                } else {
+                    // Fallback: Assume W2 Contingent
+                    response = response.replace(/\[Client Company\]/g, client);
+                    response = response.replace(/\[EOR\]/g, eor);
+                    response = response.replace(/\[BENEFITS_PROVIDER\]/g, eor);
+                    response = response.replace(/\[PTO_PROVIDER\]/g, eor);
+                    response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
+                    response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s system`);
+                    response = response.replace(/\[ACCESS_HELP\]/g, `Contact ${eor} support.`);
+                }
+
+                // Add detection banner (employee mode only)
+                if (currentMode === 'employee' && detectedType && detectedType !== 'Unknown') {
+                    const label = detectedType === 'W2_Contingent' ? 'W2 contingent worker' : 
+                                  detectedType === '1099' ? '1099 independent contractor' : 'W2 contingent worker';
+                    response = `🔍 Based on your question, you're a **${label}**.\n\n` + response;
+                }
+
+                // Add confusion clarification (employee mode only, ONLY for W2 Contingent)
+                if (currentMode === 'employee' && detectConfusion(lower) && detectedType === 'W2_Contingent') {
+                    const c = clientCompany || '[your client]';
+                    const e = employerCompany || '[your EOR]';
+                    response += `\n\n💡 **Quick clarification:**\n• You work ON-SITE at **${c}**\n• You're employed BY **${e}** (check paystub)\n• ${e} handles pay/benefits - not ${c}`;
+                }
+
+                return response;
+            }
+
+            return "I'm not finding a match. Try asking about:\n\n• Benefits and insurance\n• PTO and time off\n• Payment/payroll\n• Who your employer is\n• Team management\n• Leadership coaching (productivity, delegation, goals)\n• New manager advice";
+        }
+
+        // Message handling
+        function parseMarkdown(text) {
+            // Convert **text** to <strong>text</strong>
+            text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            
+            // Convert line breaks to <br>
+            text = text.replace(/\n/g, '<br>');
+            
+            // Convert bullet points • to proper formatting
+            text = text.replace(/^• (.+)$/gm, '<div style="margin-left:20px">• $1</div>');
+            
+            // Convert ✅ ❌ with some spacing
+            text = text.replace(/^([✅❌]) (.+)$/gm, '<div style="margin:4px 0">$1 $2</div>');
+            
+            // Convert 🔍 detection badges
+            text = text.replace(/🔍 (.+?):/g, '<strong style="color:#667eea">🔍 $1:</strong>');
+            
+            // Convert 💡 clarification
+            text = text.replace(/💡 (.+?):/g, '<strong style="color:#f59e0b">💡 $1:</strong>');
+            
+            // Convert 📌 Important
+            text = text.replace(/📌 (.+?):/g, '<strong style="color:#ef4444">📌 $1:</strong>');
+            
+            return text;
+        }
+
+        function addMessage(text, sender) {
+            const messages = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            
+            // Parse markdown for bot messages
+            const content = sender === 'bot' ? parseMarkdown(text) : text.replace(/\n/g, '<br>');
+            
+            div.innerHTML = `
+                <div class="message-avatar">${sender === 'bot' ? 'A' : 'You'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') handleSend();
+        }
+
+        function handleSend() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addMessage(msg, 'user');
+            input.value = '';
+
+            const messages = document.getElementById('chatMessages');
+            const typing = document.createElement('div');
+            typing.className = 'message bot';
+            typing.innerHTML = `
+                <div class="message-avatar">A</div>
+                <div class="typing-indicator active">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            messages.appendChild(typing);
+
+            setTimeout(() => {
+                typing.remove();
+                const response = getResponse(msg);
+                addMessage(response, 'bot');
+            }, 1000);
+        }
+
+        // CSV handling (optional)
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    parseCSV(e.target.result);
+                    addMessage("✅ CSV loaded! Your custom Q&As are active.", 'bot');
+                } catch (err) {
+                    addMessage("❌ Error loading CSV. Check format.", 'bot');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const parsed = { employee: [], manager: [] };
+
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const parts = line.split('","');
+                if (parts.length < 4) continue;
+
+                const keywords = parts[1].replace(/"/g, '').split(';').map(k => k.trim());
+                const types = parts[2].replace(/"/g, '').split(';').map(t => t.trim());
+                const answer = parts[3].replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+                const mode = (parts[4] || 'employee').replace(/"/g, '').trim();
+
+                parsed[mode].push({ keywords, types, answer });
+            }
+
+            faqData = parsed;
+        }
+
+        // Boot
+        window.onload = init;
+    </script>
 </body>
 </html>
