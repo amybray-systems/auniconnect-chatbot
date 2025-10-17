@@ -377,6 +377,14 @@
                 gap: 5px;
             }
         }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -405,6 +413,9 @@
                 <strong>🧠 Smart Detection Active</strong>
                 I'll detect your employment type from your questions, or use Quick Setup for instant demo!
                 <button onclick="toggleQuickSetup()" style="background:rgba(255,255,255,0.3);border:none;color:white;padding:4px 12px;border-radius:12px;cursor:pointer;font-size:11px;margin-left:10px">Quick Setup</button>
+                <div style="margin-top:8px;font-size:11px;opacity:0.9;">
+                    ⚠️ <strong>Demo Only:</strong> All company names, benefits, and policies shown are fictional examples for demonstration purposes and do not reflect actual employer or client benefits.
+                </div>
             </div>
 
             <div class="quick-setup" id="quickSetup">
@@ -447,21 +458,61 @@
 
         <div class="chat-input-container">
             <div class="chat-input-wrapper">
-                <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="handleCSVUpload(event)">
-                <button class="csv-btn" onclick="document.getElementById('csvInput').click()">📁 Upload CSV</button>
                 <input type="text" id="chatInput" class="chat-input" placeholder="Ask me anything..." onkeypress="handleKeyPress(event)">
                 <button class="send-btn" onclick="handleSend()">Send</button>
             </div>
         </div>
     </div>
 
+    <div class="footer">
+        © <span id="year"></span> Amy Bray. All rights reserved.
+    </div>
+
     <script>
+        // Set copyright year
+        document.getElementById('year').textContent = new Date().getFullYear();
         // State
         let currentMode = 'employee';
         let clientCompany = null;
         let employerCompany = null;
         let detectedType = null;
         let faqData = null;
+
+        // EOR-specific benefit details
+        const eorBenefits = {
+            'Randstad': {
+                medical: 'Blue Cross Blue Shield PPO',
+                pto_days: '15 vacation + 10 sick days',
+                match_401k: '4% match (100% vested after 1 year)',
+                enrollment_window: '30 days from hire or November open enrollment',
+                portal: 'MyRandstad benefits portal',
+                payroll_schedule: 'Bi-weekly (every other Friday)'
+            },
+            'Adecco': {
+                medical: 'Aetna HMO or PPO options',
+                pto_days: '10 vacation + 5 sick days (increases after 2 years)',
+                match_401k: '3% match (50% vested immediately)',
+                enrollment_window: '60 days from hire or during annual enrollment',
+                portal: 'Adecco Associate Portal',
+                payroll_schedule: 'Weekly (every Friday)'
+            },
+            'Manpower': {
+                medical: 'United Healthcare Choice Plus',
+                pto_days: '12 vacation + 8 sick days',
+                match_401k: '5% match (vested immediately)',
+                enrollment_window: '30 days from start date',
+                portal: 'ManpowerGroup MyPath',
+                payroll_schedule: 'Bi-weekly (Fridays)'
+            },
+            'Robert Half': {
+                medical: 'Cigna Open Access Plus',
+                pto_days: '20 vacation + 10 sick days',
+                match_401k: '6% match (100% vested)',
+                enrollment_window: '45 days from hire',
+                portal: 'RH Connect Benefits Hub',
+                payroll_schedule: 'Bi-weekly (Thursdays)'
+            }
+        };
 
         // Typos mapping
         const typos = {
@@ -494,17 +545,17 @@
                 {
                     keywords: ['benefits', 'benifits', 'insurance', 'health', 'medical', 'dental', 'vision'],
                     types: ['W2_Contingent'],
-                    answer: "W2 Contingent Benefits:\n\n**Your Benefits Come From:**\n[BENEFITS_PROVIDER]\n\n**Typical Benefits:**\n• Medical, dental, vision\n• 401(k) with match\n• PTO and sick days\n• Life and disability\n\n**How to Enroll:**\nLog into [BENEFITS_PROVIDER]'s benefits portal or contact their HR team."
+                    answer: "W2 Contingent Benefits:\n\n**Your Benefits Come From:**\n[BENEFITS_PROVIDER]\n\n**Health Insurance:**\n• Medical: [MEDICAL_PLAN]\n• Dental and Vision included\n• [ENROLLMENT_WINDOW]\n\n**Retirement:**\n• 401(k) with [MATCH_401K]\n\n**Time Off:**\n• [PTO_DAYS]\n\n**How to Enroll:**\nLog into [PORTAL] or contact [BENEFITS_PROVIDER]'s HR team at 1-800-XXX-XXXX."
                 },
                 {
                     keywords: ['pto', 'vacation', 'time off', 'request time off', 'take time off'],
                     types: ['W2_Contingent'],
-                    answer: "PTO for W2 Contingent:\n\n**Your PTO is Managed By:**\n[PTO_PROVIDER]\n\n**Typical PTO:**\n• 10-20 vacation days/year\n• 5-10 sick days/year\n• Request 2+ weeks in advance\n\n**How to Request:**\nSubmit PTO requests through [PTO_PROVIDER]'s portal or employee system."
+                    answer: "PTO for W2 Contingent:\n\n**Your PTO is Managed By:**\n[PTO_PROVIDER]\n\n**Your PTO Allocation:**\n• [PTO_DAYS]\n• Request 2+ weeks in advance for vacation\n• Sick days can be used same-day\n\n**How to Request:**\nSubmit PTO requests through [PORTAL] or contact your [PTO_PROVIDER] HR representative.\n\n**Important:** PTO policies are set by [PTO_PROVIDER], not [Client Company]."
                 },
                 {
                     keywords: ['pay', 'paycheck', 'paid', 'salary', 'wage', 'when do i get paid', 'payday'],
                     types: ['W2_Contingent'],
-                    answer: "W2 Contingent Payroll:\n\n**Who Pays You:**\n[PAYROLL_PROVIDER] (check your paystub!)\n\n**Schedule:** Usually bi-weekly, direct deposit\n**Taxes:** Automatically withheld\n\n**Questions About Pay:**\nContact [PAYROLL_PROVIDER]'s payroll department."
+                    answer: "W2 Contingent Payroll:\n\n**Who Pays You:**\n[PAYROLL_PROVIDER] (check your paystub!)\n\n**Pay Schedule:**\n• [PAYROLL_SCHEDULE]\n• Direct deposit required\n• Taxes automatically withheld\n\n**Pay Stub Access:**\nView pay stubs anytime in [PORTAL]\n\n**Questions About Pay:**\nContact [PAYROLL_PROVIDER]'s payroll department or check [PORTAL] for details."
                 },
                 {
                     keywords: ['timesheet', 'time', 'log time', 'track time', 'clock in', 'log hours', 'enter time'],
@@ -981,7 +1032,7 @@
                         response = response.replace(/\[EOR\]/g, 'N/A (you\'re self-employed)');
                         response = response.replace(/\[Client Company\]/g, client);
                     } else if (detectedType === 'W2_Contingent') {
-                        // W2 Contingent: Split between EOR and Client
+                        // W2 Contingent: Split between EOR and Client with specific details
                         response = response.replace(/\[Client Company\]/g, client);
                         response = response.replace(/\[EOR\]/g, eor);
                         response = response.replace(/\[BENEFITS_PROVIDER\]/g, `${eor} (your employer)`);
@@ -989,6 +1040,25 @@
                         response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
                         response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s time system (may sync with ${client}'s)`);
                         response = response.replace(/\[ACCESS_HELP\]/g, `For ${eor} portal/paystubs: Contact ${eor} support. For ${client} work systems: Contact your manager or ${client} IT.`);
+                        
+                        // Add EOR-specific details if we have them
+                        if (employerCompany && eorBenefits[employerCompany]) {
+                            const details = eorBenefits[employerCompany];
+                            response = response.replace(/\[MEDICAL_PLAN\]/g, details.medical);
+                            response = response.replace(/\[PTO_DAYS\]/g, details.pto_days);
+                            response = response.replace(/\[MATCH_401K\]/g, details.match_401k);
+                            response = response.replace(/\[ENROLLMENT_WINDOW\]/g, details.enrollment_window);
+                            response = response.replace(/\[PORTAL\]/g, details.portal);
+                            response = response.replace(/\[PAYROLL_SCHEDULE\]/g, details.payroll_schedule);
+                        } else {
+                            // Generic fallbacks if no specific EOR selected
+                            response = response.replace(/\[MEDICAL_PLAN\]/g, 'varies by EOR');
+                            response = response.replace(/\[PTO_DAYS\]/g, '10-20 vacation days + 5-10 sick days per year');
+                            response = response.replace(/\[MATCH_401K\]/g, '3-6% match');
+                            response = response.replace(/\[ENROLLMENT_WINDOW\]/g, '30-60 days from hire');
+                            response = response.replace(/\[PORTAL\]/g, `${eor}'s benefits portal`);
+                            response = response.replace(/\[PAYROLL_SCHEDULE\]/g, 'bi-weekly or weekly');
+                        }
                     } else {
                         // Fallback: Assume W2 Contingent
                         response = response.replace(/\[Client Company\]/g, client);
@@ -998,6 +1068,12 @@
                         response = response.replace(/\[PAYROLL_PROVIDER\]/g, eor);
                         response = response.replace(/\[TIME_SYSTEM\]/g, `${eor}'s system`);
                         response = response.replace(/\[ACCESS_HELP\]/g, `Contact ${eor} support.`);
+                        response = response.replace(/\[MEDICAL_PLAN\]/g, 'varies by EOR');
+                        response = response.replace(/\[PTO_DAYS\]/g, '10-20 vacation days + 5-10 sick days per year');
+                        response = response.replace(/\[MATCH_401K\]/g, '3-6% match');
+                        response = response.replace(/\[ENROLLMENT_WINDOW\]/g, '30-60 days from hire');
+                        response = response.replace(/\[PORTAL\]/g, `${eor}'s benefits portal`);
+                        response = response.replace(/\[PAYROLL_SCHEDULE\]/g, 'bi-weekly or weekly');
                     }
                 }
 
