@@ -413,7 +413,8 @@
                 <strong>🧠 Smart Detection Active</strong>
                 I'll detect your employment type from your questions, or use Quick Setup for instant demo!
                 <button onclick="toggleQuickSetup()" style="background:rgba(255,255,255,0.3);border:none;color:white;padding:4px 12px;border-radius:12px;cursor:pointer;font-size:11px;margin-left:10px">Quick Setup</button>
-                <div style="margin-top:8px;font-size:11px;opacity:0.9;">
+                <button onclick="resetType()" style="background:rgba(255,255,255,0.3);border:none;color:white;padding:4px 12px;border-radius:12px;cursor:pointer;font-size:11px;margin-left:10px">Reset Type</button>
+				<div style="margin-top:8px;font-size:11px;opacity:0.9;">
                     ⚠️ <strong>Demo Only:</strong> All company names, benefits, and policies shown are fictional examples for demonstration purposes and do not reflect actual employer or client benefits.
                 </div>
             </div>
@@ -476,6 +477,7 @@
         let clientCompany = null;
         let employerCompany = null;
         let detectedType = null;
+		let manualTypeSet = false;
         let faqData = null;
 
         // EOR-specific benefit details
@@ -756,11 +758,21 @@
 
         function setEmploymentType(type) {
             detectedType = type;
+			manualTypeSet = true;
             
             // Clear employer if switching to 1099
             if (type === '1099') {
                 employerCompany = null;
             }
+		
+		function resetType() {
+			detectedType = null;
+			manualTypeSet = false;
+			clientCompany = null;
+			employerCompany = null;
+			updateBadges();
+			addMessage("Type detection reset! I'll detect from your next question.", 'bot');
+		}
             
             // Enable/disable EOR buttons based on type
             const eorButtons = document.querySelectorAll('[onclick^="setEmployer"]');
@@ -824,6 +836,7 @@
 
         function switchMode(mode, event) {
             currentMode = mode;
+			manualTypeSet = false;
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
 
@@ -992,10 +1005,10 @@
             detectCompanies(lower);
 
             // Only detect type in employee mode
-            if (currentMode === 'employee') {
-                const type = detectType(lower);
-                if (type) detectedType = type;
-            }
+            if (currentMode === 'employee' && !manualTypeSet) {
+				const type = detectType(lower);
+				if (type) detectedType = type;
+			}
 
             updateBadges();
 
