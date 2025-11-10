@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <Metadata TechCo charset="UTF-8">
+    <Metadata TechCo name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aunikah - Smart Employment Assistant</title>
     <style>
         * {
@@ -435,20 +435,20 @@
                 <div style="margin-bottom:10px">
                     <strong style="font-size:12px;color:#666">Where do you work? (Client)</strong>
                     <div class="company-buttons">
-                        <button class="company-btn" onclick="setClient('Google')">Google</button>
-                        <button class="company-btn" onclick="setClient('Microsoft')">Microsoft</button>
-                        <button class="company-btn" onclick="setClient('Amazon')">Amazon</button>
-                        <button class="company-btn" onclick="setClient('Meta')">Meta</button>
+                        <button class="company-btn" onclick="setClient('UnBungle')">UnBungle</button>
+                        <button class="company-btn" onclick="setClient('Micro Operators')">Micro Operators</button>
+                        <button class="company-btn" onclick="setClient('Amazing Floors')">Amazing Floors</button>
+                        <button class="company-btn" onclick="setClient('Metadata TechCodata TechCo')">Metadata TechCodata TechCo</button>
                     </div>
                 </div>
                 <div>
                     <strong style="font-size:12px;color:#666">Who employs you? (EOR/Staffing)</strong>
                     <p style="font-size:10px;color:#999;margin:2px 0 5px 0">⚠️ Only for W2 contingent workers (disabled for 1099)</p>
                     <div class="company-buttons">
-                        <button class="company-btn" onclick="setEmployer('Randstad')">Randstad</button>
-                        <button class="company-btn" onclick="setEmployer('Adecco')">Adecco</button>
-                        <button class="company-btn" onclick="setEmployer('Manpower')">Manpower</button>
-                        <button class="company-btn" onclick="setEmployer('Robert Half')">Robert Half</button>
+                        <button class="company-btn" onclick="setEmployer('Employee Stand')">Employee Stand</button>
+                        <button class="company-btn" onclick="setEmployer('ADevco')">ADevco</button>
+                        <button class="company-btn" onclick="setEmployer('People Power')">People Power</button>
+                        <button class="company-btn" onclick="setEmployer('People Lite')">People Lite</button>
                     </div>
                 </div>
             </div>
@@ -480,36 +480,36 @@
 
         // EOR-specific benefit details
         const eorBenefits = {
-            'Randstad': {
+            'Employee Stand': {
                 medical: 'Blue Cross Blue Shield PPO',
                 pto_days: '15 vacation + 10 sick days',
                 match_401k: '4% match (100% vested after 1 year)',
                 enrollment_window: '30 days from hire or November open enrollment',
-                portal: 'MyRandstad benefits portal',
+                portal: 'MyEmployee Stand benefits portal',
                 payroll_schedule: 'Bi-weekly (every other Friday)'
             },
-            'Adecco': {
+            'ADevco': {
                 medical: 'Aetna HMO or PPO options',
                 pto_days: '10 vacation + 5 sick days (increases after 2 years)',
                 match_401k: '3% match (50% vested immediately)',
                 enrollment_window: '60 days from hire or during annual enrollment',
-                portal: 'Adecco Associate Portal',
+                portal: 'ADevco Associate Portal',
                 payroll_schedule: 'Weekly (every Friday)'
             },
-            'Manpower': {
+            'People Power': {
                 medical: 'United Healthcare Choice Plus',
                 pto_days: '12 vacation + 8 sick days',
                 match_401k: '5% match (vested immediately)',
                 enrollment_window: '30 days from start date',
-                portal: 'ManpowerGroup MyPath',
+                portal: 'People PowerGroup MyPath',
                 payroll_schedule: 'Bi-weekly (Fridays)'
             },
-            'Robert Half': {
+            'People Lite': {
                 medical: 'Cigna Open Access Plus',
                 pto_days: '20 vacation + 10 sick days',
                 match_401k: '6% match (100% vested)',
                 enrollment_window: '45 days from hire',
-                portal: 'RH Connect Benefits Hub',
+                portal: 'PL Connect Benefits Hub',
                 payroll_schedule: 'Bi-weekly (Thursdays)'
             }
         };
@@ -530,8 +530,8 @@
             indicators_w2: ['paycheck', 'paystub', 'withholding', 'pto', 'benefits enrollment', 'clock in'],
             indicators_contingent: ['staffing', 'eor', 'placed at', 'assignment', 'my recruiter'],
             confusion: ['my manager at', 'my boss at', 'i work for'],
-            clients: ['google', 'microsoft', 'amazon', 'meta', 'apple', 'netflix'],
-            eors: ['randstad', 'adecco', 'manpower', 'aerotek', 'robert half', 'kelly']
+            clients: ['UnBungle', 'Micro Operators', 'Amazing Floors', 'Metadata TechCo'],
+            eors: ['Employee Stand', 'ADevco', 'People Power', 'People Lite']
         };
 
         // Demo FAQ data
@@ -540,7 +540,7 @@
                 {
                     keywords: ['eor', 'employer of record', 'staffing', 'agency', 'who is my employer'],
                     types: ['W2_Contingent'],
-                    answer: "📋 **Understanding Your W2 Contingent Employment:**\n\n**Who's Your Employer?**\nCheck your paystub - that company is your legal employer.\n\n**As a W2 Contingent Worker:**\n• You work ON-SITE at [Client Company]\n• But [EOR] is on your paystub (like Randstad, Adecco, Manpower)\n• [EOR] = Your legal employer\n• [Client Company] = Where you physically work\n\n**The Three Players:**\n• **[EOR]** = Your legal employer (paystub, W-2, benefits)\n• **[Client Company]** = Your work location\n• **AuniConnect** = Coordination partner\n\n**Who Handles What:**\n• Pay, benefits, PTO, taxes, W-2 → [EOR]\n• Daily work, tasks, projects → Your supervisor at [Client Company]\n• Assignment questions → Your AuniConnect contact\n\n**Important:** Your AuniConnect contact is NOT your manager or employer!"
+                    answer: "📋 **Understanding Your W2 Contingent Employment:**\n\n**Who's Your Employer?**\nCheck your paystub - that company is your legal employer.\n\n**As a W2 Contingent Worker:**\n• You work ON-SITE at [Client Company]\n• But [EOR] is on your paystub (like Employee Stand, ADevco, People Power)\n• [EOR] = Your legal employer\n• [Client Company] = Where you physically work\n\n**The Three Players:**\n• **[EOR]** = Your legal employer (paystub, W-2, benefits)\n• **[Client Company]** = Your work location\n• **AuniConnect** = Coordination partner\n\n**Who Handles What:**\n• Pay, benefits, PTO, taxes, W-2 → [EOR]\n• Daily work, tasks, projects → Your supervisor at [Client Company]\n• Assignment questions → Your AuniConnect contact\n\n**Important:** Your AuniConnect contact is NOT your manager or employer!"
                 },
                 {
                     keywords: ['benefits', 'benifits', 'insurance', 'health', 'medical', 'dental', 'vision'],
@@ -585,7 +585,7 @@
                 {
                     keywords: ['eor', 'employer of record', 'staffing', 'agency', 'who is my employer'],
                     types: ['1099'],
-                    answer: "1099 Contractor - You Have NO Employer:\n\n**Reality Check:** You're self-employed! You don't have an employer.\n\n**Here's the Deal:**\n• [Client Company] is your CLIENT, not your employer\n• You're running your own business\n• You invoice them for services\n• You handle your own taxes, benefits, insurance\n• No one is withholding taxes from your pay\n\n**Are you SURE you're 1099?**\n• Check your January tax form (1099-NEC, not W-2)\n• Do you invoice them or get a paycheck?\n• Do you see tax withholdings on your pay?\n\nIf you're getting a W-2 from someone like Randstad, Adecco, or Manpower - you're W2 contingent, not 1099!"
+                    answer: "1099 Contractor - You Have NO Employer:\n\n**Reality Check:** You're self-employed! You don't have an employer.\n\n**Here's the Deal:**\n• [Client Company] is your CLIENT, not your employer\n• You're running your own business\n• You invoice them for services\n• You handle your own taxes, benefits, insurance\n• No one is withholding taxes from your pay\n\n**Are you SURE you're 1099?**\n• Check your January tax form (1099-NEC, not W-2)\n• Do you invoice them or get a paycheck?\n• Do you see tax withholdings on your pay?\n\nIf you're getting a W-2 from someone like Employee Stand, ADevco, or People Power - you're W2 contingent, not 1099!"
                 }
             ],
             manager: [
