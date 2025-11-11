@@ -850,7 +850,7 @@
             if (mode === 'employee') {
                 desc.childNodes[0].textContent = 'Smart Employment Assistant';
                 addWelcomeMessage(
-                    "Hi! 👤 I'm here to answer your employment questions. I'll figure out your type from your questions - just ask!",
+                    "Hi! 👤 I'm here to answer your employment questions. I'll figure out your type from your selections above - just ask!",
                     [
                         "What are my benefits?",
                         "How do I request PTO?",
@@ -884,7 +884,7 @@
     chatMessages.innerHTML = '';
     
     addWelcomeMessage(
-        "Type detection reset! I'll figure out your employment type from your questions - just ask!",
+        "Type detection reset! I'll figure out your employment type from your selections above - just ask!",
         [
             "What are my benefits?",
             "How do I request PTO?",
@@ -1039,7 +1039,7 @@
             // Greetings
             if (lower.match(/\b(hi|hello|hey)\b/)) {
                 return currentMode === 'employee'
-                    ? "Hello! 😊 I'll figure out your employment type from your questions. Just ask away!"
+                    ? "Hello! 😊 I'll figure out your employment type from your selections above. Just ask away!"
                     : "Hello! 👔 I'm here to help you answer your team's employment questions!";
             }
 
@@ -1298,4 +1298,5 @@
     </script>
 </body>
 </html>
+
 
