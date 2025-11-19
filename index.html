@@ -169,6 +169,9 @@
 
     // Demo team member database (in production, this would be an API call)
     const employeeDatabase = {
+      'Abby Martinez': { type: 'W2_Contingent', client: 'UnBungle', employer: 'Employee Stand' },
+      'Mary Thompson': { type: 'W2_Contingent', client: 'Metadata TechCo', employer: 'ADevco' },
+      'Claudia Park': { type: '1099', client: 'Micro Operators', employer: null },
       'Sarah Chen': { type: 'W2_Contingent', client: 'UnBungle', employer: 'Employee Stand' },
       'Marcus Johnson': { type: '1099', client: 'Micro Operators', employer: null },
       'Elena Rodriguez': { type: 'W2_Contingent', client: 'Amazing Floors', employer: 'ADevco' },
@@ -310,25 +313,31 @@
           id: 'mgr_pto',
           keywords: ['pto','time off','team pto','approve pto','vacation'],
           types: ['All'],
-          answer: "Answering Team PTO Questions\n\n**For W-2 Contingent:** PTO policy is set by their **[EOR]**. As the client manager, you approve scheduling/coverage; the EOR confirms eligibility and balance.\n\n**For 1099:** Time off is typically unpaid; align on deliverables and timelines."
+          answer: "Team PTO for [EMPLOYEE_NAME]\n\n**Worker Type:** [WORKER_TYPE]\n\n[PTO_DETAILS]\n\n**Your role:**\n[MANAGER_ROLE]"
+        },
+        {
+          id: 'mgr_engagement',
+          keywords: ['engagement','team engagement','engage','morale','motivation','appreciate','appreciation','feeling valued'],
+          types: ['All'],
+          answer: "Building Team Engagement & Appreciation\n\n**Why it matters for contingent workers:**\nContingent team members often feel \"outside\" the core team. Intentional inclusion drives better performance, retention, and referrals.\n\n**Quick Wins (Do These First):**\n• **Welcome them properly** - Intro to team, tour, buddy system, team lunch first week\n• **Include in team rituals** - All-hands, team celebrations, Slack channels, social events\n• **Public recognition** - Shout-outs in meetings, Slack kudos, highlight their wins\n• **Use their name** - Not \"the contractor\" or \"the temp\" - always use their actual name\n\n**Ongoing Practices:**\n• **Regular 1:1s** - Weekly or bi-weekly, same as permanent staff\n• **Career conversations** - Ask about their goals, offer stretch projects, connect them to learning\n• **Visibility to leadership** - Include them in demos, let them present their work\n• **Feedback loops** - Ask \"How can I better support you?\" and actually act on it\n• **Project ownership** - Give real responsibility, not just tasks\n\n**Recognition Ideas:**\n• Celebrate project completions publicly\n• Send thank-you messages copying their EOR recruiter\n• Nominate for company awards (if eligible)\n• LinkedIn recommendations when they move on\n• Ask for their input in planning/strategy\n\n**What NOT to do:**\n❌ Exclude them from team events (\"it's just for full-time staff\")\n❌ Treat them as interchangeable resources\n❌ Only give feedback when something's wrong\n❌ Promise employment/promotion you can't deliver\n❌ Make jokes about their \"temporary\" status\n\n**Remember:** Contingent doesn't mean disposable. These are professionals who chose flexibility - treat them like the valuable team members they are."
         },
         {
           id: 'mgr_benefits',
           keywords: ['benefits','insurance','team benefits','health insurance'],
           types: ['All'],
-          answer: "Team Benefits Questions\n\n**W-2 Contingent:** Benefits are handled by the worker's **[EOR]** (see paystub).\n**1099:** Contractors usually arrange their own coverage.\n\nIf there's confusion, ask the worker to confirm the company name on their paystub or January form."
+          answer: "Team Benefits for [EMPLOYEE_NAME]\n\n**Worker Type:** [WORKER_TYPE]\n\n[BENEFITS_DETAILS]\n\n**Your role as manager:**\nYou can answer general questions, but benefits enrollment and specific plan details should route to [BENEFITS_CONTACT]."
         },
         {
           id: 'mgr_payroll',
           keywords: ['payroll','paycheck','pay issue','salary'],
           types: ['All'],
-          answer: "Team Payroll Questions\n\n**W-2 Contingent:** Payroll is handled by the worker's **[EOR]**. You can approve hours; payroll questions route to the EOR payroll team.\n**1099:** Contractors submit invoices to Accounts Payable per agreed terms."
+          answer: "Team Payroll Questions\n\n**For W-2 Contingent:** Payroll for [EMPLOYEE_NAME] is handled by [EOR]. You can approve hours; payroll questions should route to the EOR payroll team.\n\n**For 1099:** Contractors submit invoices to Accounts Payable per agreed terms."
         },
         {
           id: 'mgr_feedback',
           keywords: ['feedback','give feedback','providing feedback','how to give feedback'],
           types: ['All'],
-          answer: "Giving Effective Feedback\n\n**Positive Feedback (Recognition):**\n• Be specific: \"Your proposal included clear ROI analysis\"\n• State impact: \"This helped leadership make a faster decision\"\n• Timely: Within 24-48 hours of the achievement\n• Public when possible: \"I'd like to give a shoutout to [EMPLOYEE_NAME] for showing up everyday and making such a positive impact on our community!\"\n\n**Constructive Feedback (Growth):**\n• Private setting, timely conversation\n• SBI Model:\n  - **Situation:** \"In yesterday's client meeting...\"\n  - **Behavior:** \"...when you interrupted the client twice...\"\n  - **Impact:** \"...they seemed frustrated and we lost momentum\"\n• Focus on actions, not character\n• Ask: \"What's your perspective?\" (listen actively)\n• Collaborate: \"What could work better next time?\"\n• End with support: \"I'm here to help you succeed\"\n\n**General principles:**\n• Balance: Aim for 3-5 positive interactions per constructive one\n• Regular rhythm: Don't save it all for reviews\n• Follow up: Check in on progress\n• Document: Keep notes for performance conversations"
+          answer: "Giving Effective Feedback\n\n**Positive Feedback (Recognition):**\n• Be specific: \"Your proposal included clear ROI analysis\"\n• State impact: \"This helped leadership make a faster decision\"\n• Timely: Within 24-48 hours of the achievement\n• Public when possible: \"I'd like to give a shoutout to Abby, Mary, and Claudia for showing up everyday and making such a positive impact on our community!\"\n\n**Constructive Feedback (Growth):**\n• Private setting, timely conversation\n• SBI Model:\n  - **Situation:** \"In yesterday's client meeting...\"\n  - **Behavior:** \"...when you interrupted the client twice...\"\n  - **Impact:** \"...they seemed frustrated and we lost momentum\"\n• Focus on actions, not character\n• Ask: \"What's your perspective?\" (listen actively)\n• Collaborate: \"What could work better next time?\"\n• End with support: \"I'm here to help you succeed\"\n\n**General principles:**\n• Balance: Aim for 3-5 positive interactions per constructive one\n• Regular rhythm: Don't save it all for reviews\n• Follow up: Check in on progress\n• Document: Keep notes for performance conversations"
         },
         {
           id: 'mgr_productivity',
@@ -400,7 +409,7 @@
           id: 'mgr_performance',
           keywords: ['performance','performance management','underperformance','low performance','not delivering'],
           types: ['All'],
-          answer: "Managing Performance\n\nAddress early, be specific, agree on 2-week plan, check in twice weekly, document, involve HR if not improving. For W-2 contingent, loop in their **[EOR]** early."
+          answer: "Managing Performance\n\nAddress early, be specific, agree on 2-week plan, check in twice weekly, document, involve HR if not improving. For W-2 contingent, loop in [EMPLOYEE_NAME]'s EOR ([EOR]) early."
         },
         {
           id: 'mgr_recognition',
@@ -418,13 +427,13 @@
           id: 'mgr_manage_contingent',
           keywords: ['manage','managing','contingent','contractor','team'],
           types: ['All'],
-          answer: "Managing Contingent Workers\n\nDirect daily work/deliverables. Avoid pay/benefits discussions or employment promises. Route HR items to the worker's **[EOR]**."
+          answer: "Managing Contingent Workers\n\nDirect daily work/deliverables. Avoid pay/benefits discussions or employment promises. Route HR items to [EMPLOYEE_NAME]'s EOR: [EOR]."
         },
         {
           id: 'mgr_time_tracking',
           keywords: ['timesheet','time tracking','log time','clock in'],
           types: ['All'],
-          answer: "Team Time Tracking\n\n**W-2 contingent:** log time in **[EOR]** system; you approve.\n**1099:** contractors track their own time; you verify deliverables."
+          answer: "Team Time Tracking\n\n**For W-2 contingent:** [EMPLOYEE_NAME] logs time in [EOR]'s system; you approve.\n\n**For 1099:** Contractors track their own time; you verify deliverables."
         },
         {
           id: 'mgr_invoices',
@@ -687,7 +696,15 @@
       }
       
       clientBadge.innerHTML = clientCompany ? `<span class="badge badge-client">@ ${clientCompany}</span>` : '';
-      emplBadge.innerHTML = employerCompany ? `<span class="badge badge-employer">Employed by: ${employerCompany}</span>` : '';
+      
+      // Only show employer badge for W-2 workers
+      if (detectedType === '1099') {
+        emplBadge.innerHTML = '<span class="badge badge-employer">Self-employed</span>';
+      } else if (employerCompany) {
+        emplBadge.innerHTML = `<span class="badge badge-employer">Employed by: ${employerCompany}</span>`;
+      } else {
+        emplBadge.innerHTML = '';
+      }
     }
 
     function switchMode(mode, event) {
@@ -867,9 +884,36 @@
 
         // Personalization
         if (currentMode === 'manager') {
+          const workerTypeLabel = detectedType === 'W2_Contingent' ? 'W-2 Contingent Worker' : 
+                                  detectedType === '1099' ? '1099 Independent Contractor' : 'Unknown';
+          
+          let benefitsDetails = '';
+          let benefitsContact = '';
+          let ptoDetails = '';
+          let managerRole = '';
+          
+          if (detectedType === 'W2_Contingent') {
+            benefitsDetails = `${selectedEmployee || 'This team member'} receives benefits through their employer of record, **${employerCompany || 'their EOR'}**.\n\n**Typical benefits include:**\n• Health, dental, vision insurance\n• 401(k) with employer match\n• Paid time off (PTO)\n• Workers' compensation coverage`;
+            benefitsContact = `${employerCompany || 'their EOR'}'s benefits team`;
+            
+            ptoDetails = `${selectedEmployee || 'This team member'}'s PTO policy is set by **${employerCompany || 'their EOR'}**.\n\n**How it works:**\n• PTO accrues according to the EOR's policy\n• ${selectedEmployee || 'They'} submit PTO requests in the EOR portal\n• The EOR tracks balance and approves eligibility\n• Vacation typically requires 2+ weeks notice\n• Sick time can be used same-day`;
+            managerRole = `You approve scheduling and coverage to ensure work continuity. The EOR (${employerCompany || 'their employer'}) confirms eligibility and tracks the balance.`;
+          } else if (detectedType === '1099') {
+            benefitsDetails = `As a 1099 independent contractor, ${selectedEmployee || 'this team member'} is self-employed and typically arranges their own benefits.\n\n**What they handle:**\n• Health insurance (Healthcare.gov or private plans)\n• Retirement savings (Solo 401(k) or SEP-IRA)\n• Disability/liability insurance\n• Unpaid time off (built into their rate)`;
+            benefitsContact = `N/A - they manage their own coverage`;
+            
+            ptoDetails = `As a 1099 independent contractor, ${selectedEmployee || 'this team member'} does not receive paid time off.\n\n**How it works:**\n• Time off is unpaid\n• ${selectedEmployee || 'They'} should build time-off costs into their rate\n• Best practice: Give 2+ weeks notice when possible\n• Don't bill for days not worked`;
+            managerRole = `Coordinate scheduling and align on deliverables/timelines. Ensure work commitments are met or coverage is arranged.`;
+          }
+          
           response = response.replace(/\[EOR\]/g, employerCompany || 'their EOR/staffing company')
             .replace(/\[Client Company\]/g, clientCompany || 'your company')
-            .replace(/\[EMPLOYEE_NAME\]/g, selectedEmployee || 'your team member');
+            .replace(/\[EMPLOYEE_NAME\]/g, selectedEmployee || 'your team member')
+            .replace(/\[WORKER_TYPE\]/g, workerTypeLabel)
+            .replace(/\[BENEFITS_DETAILS\]/g, benefitsDetails)
+            .replace(/\[BENEFITS_CONTACT\]/g, benefitsContact)
+            .replace(/\[PTO_DETAILS\]/g, ptoDetails)
+            .replace(/\[MANAGER_ROLE\]/g, managerRole);
         } else {
           const client = clientCompany || 'your client company';
           const eor = employerCompany || 'your EOR/staffing company';
