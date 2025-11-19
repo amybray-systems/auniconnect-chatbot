@@ -325,7 +325,7 @@
           id: 'mgr_benefits',
           keywords: ['benefits','insurance','team benefits','health insurance'],
           types: ['All'],
-          answer: "Team Benefits for [EMPLOYEE_NAME]\n\n**Worker Type:** [WORKER_TYPE]\n\n[BENEFITS_DETAILS]\n\n**Your role as manager:**\nYou can answer general questions, but benefits enrollment and specific plan details should route to [BENEFITS_CONTACT]."
+          answer: "Team Benefits for [EMPLOYEE_NAME]\n\n**Worker Type:** [WORKER_TYPE]\n\n[BENEFITS_DETAILS]\n\n**Your role as manager:**\n[BENEFITS_CONTACT]"
         },
         {
           id: 'mgr_payroll',
@@ -894,13 +894,13 @@
           
           if (detectedType === 'W2_Contingent') {
             benefitsDetails = `${selectedEmployee || 'This team member'} receives benefits through their employer of record, **${employerCompany || 'their EOR'}**.\n\n**Typical benefits include:**\n• Health, dental, vision insurance\n• 401(k) with employer match\n• Paid time off (PTO)\n• Workers' compensation coverage`;
-            benefitsContact = `${employerCompany || 'their EOR'}'s benefits team`;
+            benefitsContact = `You can answer general questions, but benefits enrollment and specific plan details should route to ${employerCompany || 'their EOR'}'s benefits team.`;
             
             ptoDetails = `${selectedEmployee || 'This team member'}'s PTO policy is set by **${employerCompany || 'their EOR'}**.\n\n**How it works:**\n• PTO accrues according to the EOR's policy\n• ${selectedEmployee || 'They'} submit PTO requests in the EOR portal\n• The EOR tracks balance and approves eligibility\n• Vacation typically requires 2+ weeks notice\n• Sick time can be used same-day`;
             managerRole = `You approve scheduling and coverage to ensure work continuity. The EOR (${employerCompany || 'their employer'}) confirms eligibility and tracks the balance.`;
           } else if (detectedType === '1099') {
-            benefitsDetails = `As a 1099 independent contractor, ${selectedEmployee || 'this team member'} is self-employed and typically arranges their own benefits.\n\n**What they handle:**\n• Health insurance (Healthcare.gov or private plans)\n• Retirement savings (Solo 401(k) or SEP-IRA)\n• Disability/liability insurance\n• Unpaid time off (built into their rate)`;
-            benefitsContact = `N/A - they manage their own coverage`;
+            benefitsDetails = `As a 1099 independent contractor, ${selectedEmployee || 'this team member'} is self-employed and typically arranges their own benefits.`;
+            benefitsContact = `You can answer general questions, but 1099 independent contractors are self-employed and handle their own coverage.`;
             
             ptoDetails = `As a 1099 independent contractor, ${selectedEmployee || 'this team member'} does not receive paid time off.\n\n**How it works:**\n• Time off is unpaid\n• ${selectedEmployee || 'They'} should build time-off costs into their rate\n• Best practice: Give 2+ weeks notice when possible\n• Don't bill for days not worked`;
             managerRole = `Coordinate scheduling and align on deliverables/timelines. Ensure work commitments are met or coverage is arranged.`;
