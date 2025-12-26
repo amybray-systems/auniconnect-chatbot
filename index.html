@@ -775,6 +775,32 @@
       
       messages.scrollTop = messages.scrollHeight;
     }
+	
+	function handleSend() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  
+  addUserMessage(msg);
+  input.value = '';
+  showTypingIndicator();
+  
+  setTimeout(() => {
+    hideTypingIndicator();
+    const result = getResponse(msg);
+    if (typeof result === 'string') {
+      addBotMessage(wrapTone(result, msg));
+      addFollowUpPrompt(); // ← NEW: Adds follow-up prompt after answer
+    } else {
+      addBotMessage(wrapTone(result.response, msg));
+      setTimeout(() => {
+        addSuggestionButtons(result.suggestions);
+        addFollowUpPrompt(); // ← NEW: Adds follow-up prompt after suggestions
+      }, 300);
+    }
+  }, 900);
+}
+
 
     function addSuggestionButtons(suggestions) {
       const messages = document.getElementById('chatMessages');
@@ -796,22 +822,18 @@
       messages.scrollTop = messages.scrollHeight;
     }
 
-    function handleSuggestionClick(text) {
-      addUserMessage(text);
-      const input = document.getElementById('chatInput');
-      input.value = '';
-      showTypingIndicator();
-      setTimeout(() => {
-        hideTypingIndicator();
-        const response = getResponse(text);
-        if (typeof response === 'string') {
-          addBotMessage(wrapTone(response, text));
-        } else {
-          addBotMessage(wrapTone(response.response, text));
-          setTimeout(() => addSuggestionButtons(response.suggestions), 300);
-        }
-      }, 900);
-    }
+    function addFollowUpPrompt() {
+  if (!setupComplete) return; // Don't show if setup isn't complete
+  
+  setTimeout(() => {
+    addBotMessage("**Have another question?** 💬");
+    setTimeout(() => {
+      const employeeSuggestions = ["What are my benefits?", "How do I request PTO?", "When do I get paid?", "Who is my employer?"];
+      const managerSuggestions = ["Team engagement tips?", "How to delegate work?", "How to give feedback?", "Managing remote teams?"];
+      addSuggestionButtons(currentMode === 'employee' ? employeeSuggestions : managerSuggestions);
+		}, 300);
+		}, 1000);
+	}
 
     function showTypingIndicator() {
       const messages = document.getElementById('chatMessages');
@@ -1017,31 +1039,30 @@
       if (e.key === 'Enter') handleSend();
     }
 
-    function handleSend() {
-      const input = document.getElementById('chatInput');
-      const msg = input.value.trim();
-      if (!msg) return;
-      
-      addUserMessage(msg);
-      input.value = '';
-      showTypingIndicator();
-      
+ function handleSuggestionClick(text) {
+  addUserMessage(text);
+  const input = document.getElementById('chatInput');
+  input.value = '';
+  showTypingIndicator();
+  setTimeout(() => {
+    hideTypingIndicator();
+    const response = getResponse(text);
+    if (typeof response === 'string') {
+      addBotMessage(wrapTone(response, text));
+      addFollowUpPrompt(); // ← NEW: Adds follow-up prompt after answer
+    } else {
+      addBotMessage(wrapTone(response.response, text));
       setTimeout(() => {
-        hideTypingIndicator();
-        const result = getResponse(msg);
-        if (typeof result === 'string') {
-          addBotMessage(wrapTone(result, msg));
-        } else {
-          addBotMessage(wrapTone(result.response, msg));
-          setTimeout(() => addSuggestionButtons(result.suggestions), 300);
-        }
-      }, 900);
+        addSuggestionButtons(response.suggestions);
+        addFollowUpPrompt(); // ← NEW: Adds follow-up prompt after suggestions
+      }, 300);
     }
+  }, 900);
+}
 
     // Boot
     window.onload = init;
   </script>
 </body>
 </html>
-
 
