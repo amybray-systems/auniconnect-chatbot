@@ -18,9 +18,11 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Aunikah - People Operations Support System">
   <meta property="og:description" content="Designed to standardize HR support, reduce repetitive inquiries, and improve response consistency for W2 and 1099 worker populations.">
-  <meta property="og:url" content="https://YOUR_GITHUB_PAGES_URL_HERE">
-  <meta property="og:image" content="https://YOUR_GITHUB_PAGES_URL_HERE/aunikah-linkedin.png">
+  <meta property="og:url" content="https://amybray-systems.github.io/auniconnect-chatbot/">
+  <meta property="og:image" content="https://amybray-systems.github.io/auniconnect-chatbot/aunikah-linkedin.png">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#667eea">
+  <meta property="og:image:alt" content="Aunikah — fictional HR support and responsible AI demo by Amy Bray">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
@@ -114,6 +116,9 @@
       .message-content { max-width:85%; }
       .mode-selector { flex-direction:column; gap:5px; }
     }
+    .about-project { max-width:900px; width:100%; margin:18px auto 0; background:#fff; border-radius:12px; padding:18px 22px; color:#344054; font-size:13px; line-height:1.6; box-shadow:0 3px 12px rgba(0,0,0,.10); }
+    .about-project p { margin-top:8px; }
+    .about-project .privacy-note { color:#8a3d23; }
     .footer { text-align:center; padding:15px; color:rgba(255,255,255,0.9); font-size:14px; font-weight:500; }
   </style>
 </head>
@@ -156,7 +161,7 @@
         I'll guide you through a quick setup, then answer your questions!
         <button class="reset-btn" onclick="resetSetup()">Start Over</button>
         <div style="margin-top:8px;font-size:11px;opacity:0.9;">
-          ⚠️ <strong>Demo Only:</strong> All names, companies, benefits, and policies are fictional examples for demonstration purposes.
+          ⚠️ <strong>Demo Only:</strong> All names, companies, benefits, and policies are fictional examples. Answers are illustrative, not legal, payroll, or benefits advice.
         </div>
       </div>
     </div>
@@ -171,6 +176,11 @@
     </div>
   </div>
 
+  <section class="about-project" aria-label="About this project">
+    <strong>About this demo</strong>
+    <p>Aunikah is a fictional HR operations support prototype created by <strong>Amy Bray</strong>. It demonstrates worker-aware routing, consistent answers, and human-centered support workflows. It is a scripted FAQ experience, not a live HR system or a generative AI adviser.</p>
+        <p class="privacy-note">Please use fictitious examples only. Do not enter sensitive personal, employee, payroll, or medical data.</p>
+  </section>
   <div class="footer">
     © <span id="year"></span> Amy Bray. All rights reserved.
   </div>
@@ -720,13 +730,13 @@
         detBadge.innerHTML = '';
       }
       
-      clientBadge.innerHTML = clientCompany ? `<span class="badge badge-client">@ ${clientCompany}</span>` : '';
+      clientBadge.innerHTML = clientCompany ? `<span class="badge badge-client">@ ${escapeHTML(clientCompany)}</span>` : '';
       
       // Only show employer badge for W-2 workers
       if (detectedType === '1099') {
         emplBadge.innerHTML = '<span class="badge badge-employer">Self-employed</span>';
       } else if (employerCompany) {
-        emplBadge.innerHTML = `<span class="badge badge-employer">Employed by: ${employerCompany}</span>`;
+        emplBadge.innerHTML = `<span class="badge badge-employer">Employed by: ${escapeHTML(employerCompany)}</span>`;
       } else {
         emplBadge.innerHTML = '';
       }
@@ -762,7 +772,7 @@
       div.className = 'message user';
       div.innerHTML = `
         <div class="message-avatar">You</div>
-        <div class="message-content">${text}</div>`;
+        <div class="message-content">${escapeHTML(text)}</div>`;
       messages.appendChild(div);
       messages.scrollTop = messages.scrollHeight;
     }
@@ -772,7 +782,7 @@
       const div = document.createElement('div');
       div.className = 'message bot';
       const buttonsHtml = buttons.map(btn => 
-        `<button class="setup-btn">${btn.label}</button>`
+        `<button class="setup-btn">${escapeHTML(btn.label)}</button>`
       ).join('');
       div.innerHTML = `
         <div class="message-avatar"><img src="${AUNIKAH_PHOTO}" alt="Aunikah"></div>
@@ -826,7 +836,7 @@
         const suggestionsDiv = document.createElement('div');
         suggestionsDiv.className = 'suggestions';
         suggestionsDiv.innerHTML = suggestions.map(s => 
-          `<button class="suggestion-btn">${s}</button>`
+          `<button class="suggestion-btn">${escapeHTML(s)}</button>`
         ).join('');
         content.appendChild(suggestionsDiv);
         
@@ -871,8 +881,12 @@
     }
 
     // ---------- Matching ----------
+    function escapeHTML(text) {
+      return String(text).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    }
+
     function normalizeText(text) {
-      let normalized = text.toLowerCase();
+      let normalized = String(text).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").replace(/\s+/g, " ").trim();
       Object.keys(typos).forEach(typo => {
         normalized = normalized.replace(new RegExp('\\b' + typo + '\\b', 'gi'), typos[typo]);
       });
@@ -884,18 +898,19 @@
       const normalized = normalizeText(msg);
       let bestMatch = null;
       let bestScore = 0;
-
-      const filteredFaqs = faqs.filter(faq => {
-        if (currentMode === 'employee' && detectedType) {
-          return faq.types.includes(detectedType) || faq.types.includes('All');
-        }
-        return true;
-      });
-
+      const filteredFaqs = faqs.filter(faq =>
+        currentMode !== 'employee' || !detectedType || faq.types.includes(detectedType) || faq.types.includes('All')
+      );
+      // Match whole words and phrases, not substrings. "pay" must not match "repayment".
+      // Prefer specific multiword phrases over generic, shorter keywords.
       filteredFaqs.forEach(faq => {
-        faq.keywords.forEach(kw => {
-          if (normalized.includes(kw.toLowerCase())) {
-            const score = 0.95;
+        (faq.keywords || []).forEach(keyword => {
+          const kw = normalizeText(keyword);
+          if (!kw) return;
+          const paddedQuery = ` ${normalized} `;
+          if (paddedQuery.includes(` ${kw} `)) {
+            const wordCount = kw.split(' ').length;
+            const score = 0.70 + Math.min(wordCount * 0.07, 0.21) + Math.min(kw.length * 0.002, 0.06);
             if (score > bestScore) {
               bestScore = score;
               bestMatch = faq;
@@ -915,14 +930,14 @@
       const lower = normalizeText(msg);
 
       // Greetings
-      if (lower.match(/\b(hi|hello|hey)\b/)) {
+      if (/^(hi|hello|hey|good morning|good afternoon|good evening)[! .]*$/.test(lower)) {
         return currentMode === 'employee'
           ? "Hello! 😊 How can I help you today?"
           : "Hello! 👔 How can I help you support your team?";
       }
 
       // Thanks
-      if (lower.match(/\b(thank|thanks)\b/)) return "You're welcome! 🌟";
+      if (/^(thanks|thank you|thank you so much)[! .]*$/.test(lower)) return "You're welcome! 🌟";
 
       // Attempt match
       const match = findMatch(msg);
@@ -988,11 +1003,11 @@
                 .replace(/\[PAYROLL_SCHEDULE\]/g, d.payroll_schedule);
             } else {
               response = response.replace(/\[MEDICAL_PLAN\]/g, 'varies by EOR')
-                .replace(/\[PTO_DAYS\]/g, '10–20 vacation + 5–10 sick days/year')
-                .replace(/\[MATCH_401K\]/g, '3–6% match')
-                .replace(/\[ENROLLMENT_WINDOW\]/g, '30–60 days from hire')
+                .replace(/\[PTO_DAYS\]/g, 'varies by employer and location; check the EOR policy')
+                .replace(/\[MATCH_401K\]/g, 'varies by employer; confirm in the official plan documents')
+                .replace(/\[ENROLLMENT_WINDOW\]/g, 'check your official enrollment notice')
                 .replace(/\[PORTAL\]/g, `${eor} benefits portal`)
-                .replace(/\[PAYROLL_SCHEDULE\]/g, 'bi-weekly or weekly');
+                .replace(/\[PAYROLL_SCHEDULE\]/g, 'check your employer payroll schedule');
             }
           }
         }
@@ -1041,6 +1056,7 @@
 
     // ---------- Message handling ----------
     function parseMarkdown(text) {
+      text = escapeHTML(text);
       text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       text = text.replace(/\n/g, '<br>');
       text = text.replace(/^• (.+)$/gm, '<div style="margin-left:20px">• $1</div>');
